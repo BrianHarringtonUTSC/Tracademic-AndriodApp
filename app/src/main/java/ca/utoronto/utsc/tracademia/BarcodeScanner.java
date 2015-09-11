@@ -1,6 +1,5 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -85,7 +84,7 @@ public class BarcodeScanner extends AppCompatActivity implements OnClickListener
         if (scanningResult != null) {
             //we have a result
             String libraryNumber = scanningResult.getContents();
-            contentTxt.setText("CONTENT: " + scanContent);
+            contentTxt.setText("CONTENT: " + libraryNumber);
 
             //TODO:: Check if the library number is valid. Then upload the required points.
         }
