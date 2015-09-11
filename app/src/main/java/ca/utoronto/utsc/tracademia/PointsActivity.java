@@ -1,16 +1,33 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
-public class PointsActivity extends AppCompatActivity {
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+/*
+    Authors: Umair Idris and Markus Friesen
+ */
+public class PointsActivity extends AppCompatActivity implements OnClickListener{
+
+    //The + button responsible for opening the barcode scanning app.
+    private ImageButton scanBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_points);
+
+        scanBtn = (ImageButton)findViewById(R.id.scanBarcode);
+        scanBtn.setOnClickListener(this);
     }
 
 
@@ -34,5 +51,36 @@ public class PointsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+        Responsible for dealing with any view that is clicked.
+        Currently supports: Opening the Barcode scanning app. If an app doesn't exit, the user
+            will be prompted to download one.
+     */
+    public void onClick(View v) {
+        //respond to clicks
+        if(v.getId()==R.id.scanBarcode){
+            IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+            scanIntegrator.initiateScan();
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        //retrieve scan result
+        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
+                intent);
+
+        if (scanningResult != null) {
+            String libraryNumber = scanningResult.getContents();
+            //TODO:: ENSURE THAT THE LIBRARY NUMBER IS CORRECT. THEN OPEN THE POINTS ACTIVITY.
+            Toast toast = Toast.makeText(getApplicationContext(), libraryNumber, Toast.LENGTH_LONG);
+            toast.show();
+        }
+        else{
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "No scan data received!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
