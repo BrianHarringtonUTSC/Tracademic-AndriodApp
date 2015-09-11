@@ -12,8 +12,8 @@
     <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
     <dimen name="list_item_height">72dp</dimen>
     <!-- Lower + button -->
-    <dimen name="round_button_diameter">53dp</dimen>
-    <dimen name="add_button_margin">18dp</dimen>
-    <dimen name="elevation_low">2dp</dimen>
-    <dimen name="elevation_high">9dp</dimen>
+    <dimen name="round_button_diameter">60dp</dimen>
+    <dimen name="add_button_margin">20dp</dimen>
+    <dimen name="elevation_high">10dp</dimen>
+    <dimen name="elevation_low">-10dp</dimen>
 </resources>

@@ -16,7 +16,7 @@
         android:tint="@android:color/white"
         android:background="@drawable/oval"
         android:src="@android:drawable/ic_input_add"
-        android:elevation="1dp"
+        android:elevation="@dimen/elevation_high"
         android:stateListAnimator="@anim/button_elevation"
         tools:ignore="RtlCompat"/>
 
