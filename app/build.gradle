@@ -6,7 +6,8 @@ android {
 
     defaultConfig {
         applicationId "ca.utoronto.utsc.tracademia"
-        minSdkVersion 16
+        //TODO:: CHANGE THIS
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
