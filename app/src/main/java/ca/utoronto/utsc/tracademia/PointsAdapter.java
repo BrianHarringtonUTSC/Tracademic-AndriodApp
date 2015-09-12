@@ -1,19 +1,3 @@
-/*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
 package ca.utoronto.utsc.tracademia;
 
 import android.support.v7.widget.RecyclerView;
@@ -42,9 +26,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
     public PointsAdapter(String[] dataSet) {
         mDataSet = dataSet;
     }
-    // END_INCLUDE(recyclerViewSampleViewHolder)
 
-    // BEGIN_INCLUDE(recyclerViewOnCreateViewHolder)
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -56,7 +38,6 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         return new ViewHolder(v);
     }
 
-    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
@@ -67,14 +48,12 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         mainText.setText(mDataSet[position]);
         subText.setText(Integer.toString(position));
     }
-    // END_INCLUDE(recyclerViewOnCreateViewHolder)
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataSet.length;
     }
-    // END_INCLUDE(recyclerViewOnBindViewHolder)
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)

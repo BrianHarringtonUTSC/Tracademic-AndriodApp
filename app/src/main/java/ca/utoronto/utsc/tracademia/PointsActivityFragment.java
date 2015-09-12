@@ -33,7 +33,6 @@ public class PointsActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.recycler_view_frag, container, false);
         rootView.setTag(TAG);
 
-        // BEGIN_INCLUDE(initializeRecyclerView)
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
         // LinearLayoutManager is used here, this will layout th\e elements in a similar fashion
@@ -46,7 +45,6 @@ public class PointsActivityFragment extends Fragment {
         mAdapter = new PointsAdapter(mDataset);
         // Set PointsAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-        // END_INCLUDE(initializeRecyclerView)
 
         return rootView;
     }
