@@ -13,7 +13,7 @@ import android.widget.TextView;
 public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> {
     private static final String TAG = "PointsAdapter";
 
-    private String[] mDataSet;
+    private StudentPoints[] mDataSet;
 
     private TextView mainText;
     private TextView subText;
@@ -23,7 +23,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public PointsAdapter(String[] dataSet) {
+    public PointsAdapter(StudentPoints[] dataSet) {
         mDataSet = dataSet;
     }
 
@@ -45,8 +45,9 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        mainText.setText(mDataSet[position]);
-        subText.setText(Integer.toString(position));
+        StudentPoints studentPoints = mDataSet[position];
+        mainText.setText(studentPoints.getStudentNumber() + " | " + studentPoints.getStudentName());
+        subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getRegularPoints());
     }
 
     // Return the size of your dataset (invoked by the layout manager)

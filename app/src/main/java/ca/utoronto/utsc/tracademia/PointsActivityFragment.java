@@ -16,7 +16,7 @@ public class PointsActivityFragment extends Fragment {
     protected RecyclerView mRecyclerView;
     protected PointsAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected String[] mDataset;
+    protected StudentPoints[] mDataset;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,9 @@ public class PointsActivityFragment extends Fragment {
 
         // Initialize dataset, this data would usually come from a local content provider or
         // remote server.
-        mDataset = new String[]{"abc", "def"};
+        StudentPoints u = new StudentPoints("999071347", "Umair Idris", 1, 2, 3);
+        StudentPoints m = new StudentPoints("9990123", "Marky Friesen", 4, 5, 7);
+        mDataset = new StudentPoints[]{u, m};
     }
 
     @Override
@@ -49,11 +51,9 @@ public class PointsActivityFragment extends Fragment {
         return rootView;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save currently selected layout manager.
         super.onSaveInstanceState(savedInstanceState);
     }
-
 }
