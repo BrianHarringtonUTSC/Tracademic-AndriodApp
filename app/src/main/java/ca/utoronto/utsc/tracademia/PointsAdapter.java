@@ -31,7 +31,8 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     private String[] mDataSet;
 
-    // BEGIN_INCLUDE(recyclerViewSampleViewHolder)
+    private TextView mainText;
+    private TextView subText;
 
     /**
      * Initialize the dataset of the Adapter.
@@ -50,7 +51,8 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         // Create a new view.
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
-
+        mainText = (TextView) v.findViewById(R.id.maintext);
+        subText = (TextView) v.findViewById(R.id.subtext);
         return new ViewHolder(v);
     }
 
@@ -62,7 +64,8 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        viewHolder.getTextView().setText(mDataSet[position]);
+        mainText.setText(mDataSet[position]);
+        subText.setText(Integer.toString(position));
     }
     // END_INCLUDE(recyclerViewOnCreateViewHolder)
 
@@ -77,7 +80,6 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
 
         public ViewHolder(View v) {
             super(v);
@@ -88,11 +90,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                 }
             });
-            textView = (TextView) v.findViewById(R.id.textView);
-        }
 
-        public TextView getTextView() {
-            return textView;
         }
     }
 }

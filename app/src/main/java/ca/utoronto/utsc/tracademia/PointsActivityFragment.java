@@ -24,7 +24,7 @@ public class PointsActivityFragment extends Fragment {
 
         // Initialize dataset, this data would usually come from a local content provider or
         // remote server.
-        initDataset();
+        mDataset = new String[]{"abc", "def"};
     }
 
     @Override
@@ -58,11 +58,4 @@ public class PointsActivityFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    /**
-     * Generates Strings for RecyclerView's adapter. This data would usually come
-     * from a local content provider or remote server.
-     */
-    private void initDataset() {
-        mDataset = new String[]{"abc", "def"};
-    }
 }
