@@ -6,14 +6,14 @@ public class StudentPoints {
     private String studentName;
     private int experiencePoints;
     private int challengePoints;
-    private int regularPoints;
+    private int teachingPoints;
 
-    public StudentPoints(String studentNumber, String studentName, int experiencePoints, int challengePoints, int regularPoints) {
+    public StudentPoints(String studentNumber, String studentName, int experiencePoints, int challengePoints, int teachingPoints) {
         this.studentNumber = studentNumber;
         this.studentName = studentName;
         this.experiencePoints = experiencePoints;
         this.challengePoints = challengePoints;
-        this.regularPoints = regularPoints;
+        this.teachingPoints = teachingPoints;
     }
 
     public String getStudentNumber() {
@@ -32,7 +32,7 @@ public class StudentPoints {
         return challengePoints;
     }
 
-    public int getRegularPoints() {
-        return regularPoints;
+    public int getTeachingPoints() {
+        return teachingPoints;
     }
 }

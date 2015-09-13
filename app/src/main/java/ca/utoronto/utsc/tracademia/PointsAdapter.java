@@ -47,7 +47,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         // with that element
         StudentPoints studentPoints = mDataSet[position];
         mainText.setText(studentPoints.getStudentNumber() + " | " + studentPoints.getStudentName());
-        subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getRegularPoints());
+        subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
