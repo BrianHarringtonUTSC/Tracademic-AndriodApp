@@ -74,8 +74,13 @@ public class PointsActivity extends AppCompatActivity implements OnClickListener
         if (scanningResult != null) {
             String libraryNumber = scanningResult.getContents();
             //TODO:: ENSURE THAT THE LIBRARY NUMBER IS CORRECT. THEN OPEN THE POINTS ACTIVITY.
+
             Toast toast = Toast.makeText(getApplicationContext(), libraryNumber, Toast.LENGTH_LONG);
             toast.show();
+
+            Intent menuIntent = new Intent(this, AwardPointsActivity.class);
+            startActivity(menuIntent);
+
         }
         else{
             Toast toast = Toast.makeText(getApplicationContext(),

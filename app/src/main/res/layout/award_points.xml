@@ -3,15 +3,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:focusableInTouchMode="true"
+    android:longClickable="false">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/linearLayout" />
 
-    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/button"
+        android:layout_marginBottom="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:elevation="@dimen/elevation_high"
+        android:src="@android:drawable/ic_input_add"
+        android:stateListAnimator="@anim/button_elevation"
+        android:textColor="#ffffff"
+        android:background="#002A5C" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarTeaching"
+        android:layout_alignBottom="@+id/ExperiencePointsView"
+        android:layout_alignStart="@+id/button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Teaching"
+        android:id="@+id/TeachingPointsView"
+        android:layout_marginBottom="28dp"
+        android:layout_above="@+id/ChallengePointsView"
+        android:layout_alignStart="@+id/ExperiencePointsView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Experience"
+        android:id="@+id/ExperiencePointsView"
+        android:layout_marginBottom="26dp"
+        android:layout_marginStart="29dp"
+        android:layout_above="@+id/TeachingPointsView"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Challenge"
+        android:id="@+id/ChallengePointsView"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/TeachingPointsView" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarChallenge"
+        android:layout_alignBottom="@+id/ChallengePointsView"
+        android:layout_alignStart="@+id/seekBarTeaching" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarExperience"
+        android:layout_alignBottom="@+id/TeachingPointsView"
+        android:layout_alignStart="@+id/seekBarChallenge"
+        android:max="10"
+        android:indeterminate="true"
+        android:progress="1" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Library Number"
+        android:ems="10"
+        android:id="@+id/LibraryNumberText"
+        android:layout_marginBottom="21dp"
+        android:layout_above="@+id/button"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
