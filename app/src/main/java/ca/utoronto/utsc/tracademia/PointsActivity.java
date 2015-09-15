@@ -21,6 +21,7 @@ public class PointsActivity extends AppCompatActivity implements OnClickListener
     //The + button responsible for opening the barcode scanning app.
     private ImageButton scanBtn;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,13 +74,13 @@ public class PointsActivity extends AppCompatActivity implements OnClickListener
 
         if (scanningResult != null) {
             String libraryNumber = scanningResult.getContents();
-            //TODO:: ENSURE THAT THE LIBRARY NUMBER IS CORRECT. THEN OPEN THE POINTS ACTIVITY.
 
-            Toast toast = Toast.makeText(getApplicationContext(), libraryNumber, Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), libraryNumber, Toast.LENGTH_SHORT);
             toast.show();
 
-            Intent menuIntent = new Intent(this, AwardPointsActivity.class);
-            startActivity(menuIntent);
+            Intent awardIntent = new Intent(this, AwardPointsActivity.class);
+            awardIntent.putExtra(getString(R.string.libraryNumber), libraryNumber);
+            startActivity(awardIntent);
 
         }
         else{

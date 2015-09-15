@@ -6,4 +6,8 @@
     <string name="grid_layout_manager">Grid Layout Manager</string>
     <string name="linear_layout_manager">Linear Layout Manager</string>
     <string name="leadboard">Leaderbord</string>
+    <string name="libraryNumber">LibraryNumber</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_title">Confirm Points</string>
+    <string name="cancel">Deny</string>
 </resources>
