@@ -12,7 +12,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 /**
- * Created by markus on 9/15/15.
+ * Created by Markus Friesen on 9/15/15.
+ * This class is responsible for awarding points to the person that is associated to the library
+ * number provided.
  */
 public class AwardPointsActivity  extends AppCompatActivity implements OnClickListener{
     int num_points = 5;
@@ -59,16 +61,15 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .setTitle(R.string.confirm_title)
-                    .setMessage("You are giving " + name +" "+ num_points + " " + pointType.toString() +" points!")
+                    .setMessage("Awarding: "+ name +"\n"+ num_points + " " + pointType.toString() +" points")
                     .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
-                            //Stop the activity
-                            AwardPointsActivity.this.finish();
+                        //Stop the activity
+                        AwardPointsActivity.this.finish();
                         }
                     }).setNegativeButton(R.string.cancel, null)
-                            .show();
+                    .show();
         }
     }
 }
