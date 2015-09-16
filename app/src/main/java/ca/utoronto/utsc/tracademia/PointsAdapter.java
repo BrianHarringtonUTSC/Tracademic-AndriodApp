@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Provide views to RecyclerView with data from mDataSet.
  */
 public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> {
     private static final String TAG = "PointsAdapter";
 
-    private StudentPoints[] mDataSet;
+    private List<StudentPoints> mDataSet;
 
     private TextView mainText;
     private TextView subText;
@@ -23,7 +26,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public PointsAdapter(StudentPoints[] dataSet) {
+    public PointsAdapter(List<StudentPoints> dataSet) {
         mDataSet = dataSet;
     }
 
@@ -45,7 +48,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        StudentPoints studentPoints = mDataSet[position];
+        StudentPoints studentPoints = mDataSet.get(position);
         mainText.setText(studentPoints.getDisplayName());
         subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
     }
@@ -53,9 +56,13 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        return mDataSet.size();
     }
 
+    public void addItemsToList(StudentPoints... studentPoints) {
+        mDataSet.addAll(Arrays.asList(studentPoints));
+        notifyDataSetChanged();
+    }
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
