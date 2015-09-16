@@ -46,7 +46,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         StudentPoints studentPoints = mDataSet[position];
-        mainText.setText(studentPoints.getStudentNumber() + " | " + studentPoints.getStudentName());
+        mainText.setText(studentPoints.getDisplayName());
         subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
     }
 
