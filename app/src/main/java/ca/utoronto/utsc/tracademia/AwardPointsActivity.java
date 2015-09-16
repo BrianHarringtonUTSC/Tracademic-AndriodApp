@@ -87,7 +87,7 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
                     .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //TODO:: Make API call to give point to studnet
+                            //TODO:: Make API call to give point to student
                             AwardPointsActivity.this.finish();
                         }
                     }).setNegativeButton(R.string.cancel, null)
