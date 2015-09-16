@@ -28,6 +28,7 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
     String libraryNumber;
     PointType pointType;
     NumberPicker typePicker, pointsPicker;
+    StudentPoints studentPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

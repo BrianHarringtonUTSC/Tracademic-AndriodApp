@@ -41,6 +41,8 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         return new ViewHolder(v);
     }
 
+
+
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
@@ -63,6 +65,16 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         mDataSet.addAll(Arrays.asList(studentPoints));
         notifyDataSetChanged();
     }
+
+    //TODO: optimze this
+    public StudentPoints getStudentPointsByLibraryNumber(String libraryNumber) {
+        for (StudentPoints studentPoints : mDataSet) {
+            // hello.
+        }
+
+        return null;
+    }
+
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
