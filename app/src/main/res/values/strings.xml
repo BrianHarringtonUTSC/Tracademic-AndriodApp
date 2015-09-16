@@ -9,5 +9,5 @@
     <string name="libraryNumber">LibraryNumber</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_title">Confirm Points</string>
-    <string name="cancel">Deny</string>
+    <string name="cancel">Edit</string>
 </resources>

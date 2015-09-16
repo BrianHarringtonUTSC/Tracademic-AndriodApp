@@ -28,26 +28,19 @@
         android:textColor="#ffffff"
         android:background="#002A5C" />
 
-    <EditText
+    <NumberPicker
+        android:id="@+id/pointTypePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:text="Library Number"
-        android:ems="10"
-        android:id="@+id/LibraryNumberText"
-        android:layout_marginBottom="21dp"
-        android:layout_above="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:editable="false"/>
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner"
+        android:layout_marginTop="120dp"
         android:layout_below="@+id/linearLayout"
-        android:layout_toStartOf="@+id/button"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="117dp" />
+        android:layout_toStartOf="@+id/give_point" />
 
-
+    <NumberPicker
+        android:id="@+id/pointsPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_alignTop="@+id/pointTypePicker"
+        android:layout_toEndOf="@+id/give_point" />
 </RelativeLayout>

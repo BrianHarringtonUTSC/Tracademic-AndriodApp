@@ -5,7 +5,7 @@ package ca.utoronto.utsc.tracademia;
  * Created by markus on 9/15/15.
  */
 public enum PointType {
-    Teaching,
     Experience,
+    Teaching,
     Challenge
 }
