@@ -6,24 +6,35 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -35,7 +46,7 @@ import javax.net.ssl.X509TrustManager;
 public class PointsActivityFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "RecyclerViewFragment";
-    private static final String BASE_URL = "https://track-point.cloudapp.net/";
+    private static String BASE_URL = "https://track-point.cloudapp.net/";
 
     protected PointsAdapter mAdapter;
     protected RecyclerView mRecyclerView;
@@ -62,7 +73,7 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
         mRecyclerView.setAdapter(mAdapter);
 
         RequestTask requestTask = new RequestTask(mAdapter);
-        requestTask.execute(BASE_URL + "api/users");
+        requestTask.execute(BASE_URL, "api/users");
 
         scanBtn = (ImageButton)rootView.findViewById(R.id.scanBarcode);
         scanBtn.setOnClickListener(this);
@@ -116,6 +127,9 @@ class RequestTask extends AsyncTask<String, String, String> {
     private final String TAG = "RequestTask";
 
     private PointsAdapter mAdapter;
+    static final String COOKIES_HEADER = "Set-Cookie";
+    static java.net.CookieManager msCookieManager = new java.net.CookieManager();
+    private Boolean hasLoggedin = false;
 
     public RequestTask(PointsAdapter mAdapter) {
         this.mAdapter = mAdapter;
@@ -149,14 +163,78 @@ class RequestTask extends AsyncTask<String, String, String> {
         }
     }
 
+    private void LogIn(String urlPath) {
+        if (!hasLoggedin) {
+            try {
+                URL url = new URL(urlPath + "/api/User");
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+
+                List<AbstractMap.SimpleEntry<String, String>> params = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+                params.add(new AbstractMap.SimpleEntry<String, String>("login", "true"));
+                params.add(new AbstractMap.SimpleEntry<String, String>("remember", "0"));
+                params.add(new AbstractMap.SimpleEntry<String, String>("password", "a"));
+                params.add(new AbstractMap.SimpleEntry<String, String>("username", "a"));
+
+                try {
+                    OutputStream os = urlConnection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(
+                            new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(getQuery(params));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
+                    List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
+
+                    if (cookiesHeader != null) {
+                        for (String cookie : cookiesHeader) {
+                            msCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+                        }
+                    }
+
+                } finally {
+                    urlConnection.disconnect();
+                }
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+            }
+        }
+    }
+    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException
+    {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        for (AbstractMap.SimpleEntry<String, String> pair : params)
+        {
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
     @Override
     protected String doInBackground(String... params) {
         String responseBody = "";
 
         trustEveryone();
+        LogIn(params[0]);
         try {
-            URL url = new URL(params[0]);
+            URL url = new URL(params[0]+params[1]);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            if (msCookieManager.getCookieStore().getCookies().size() > 0){
+                urlConnection.setRequestProperty("DefaultHttpClient",
+                        TextUtils.join(";", msCookieManager.getCookieStore().getCookies()));
+            }
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder sb = new StringBuilder();

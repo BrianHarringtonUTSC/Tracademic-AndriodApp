@@ -6,6 +6,7 @@ public class StudentPoints {
     private String displayNameCanonical;
     private String displayName;
     private String profileText;
+    private String libraryNumber;
     private int experiencePoints;
     private int challengePoints;
     private int teachingPoints;
@@ -60,6 +61,13 @@ public class StudentPoints {
         this.displayNameCanonical = displayNameCanonical;
     }
 
+    public String getLibaryNumber(){
+        return libraryNumber;
+    }
+
+    public void setLibraryNumber(String libraryNumber){
+        this.libraryNumber = libraryNumber;
+    }
     public String getProfileText() {
         return profileText;
     }
