@@ -80,7 +80,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
         public ViewHolder(View v) {
             super(v);
-            mainText = (TextView) v.findViewById(R.id.maintext);
+            mainText = (i) v.findViewById(R.id.maintext);
             subText = (TextView) v.findViewById(R.id.subtext);
 
             // Define click listener for the ViewHolder's View.
