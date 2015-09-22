@@ -64,10 +64,11 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     //TODO: optimze this
     public StudentPoints getStudentPointsByLibraryNumber(String libraryNumber) {
-//        for (StudentPoints studentPoints : mDataSet) {
-//            // hello.
-//        }
-
+        for (StudentPoints studentPoints : mDataSet) {
+            if (studentPoints.getLibaryNumber() == libraryNumber){
+                return studentPoints;
+            }
+        }
         return null;
     }
 
@@ -80,7 +81,7 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
         public ViewHolder(View v) {
             super(v);
-            mainText = (i) v.findViewById(R.id.maintext);
+            mainText = (TextView) v.findViewById(R.id.maintext);
             subText = (TextView) v.findViewById(R.id.subtext);
 
             // Define click listener for the ViewHolder's View.

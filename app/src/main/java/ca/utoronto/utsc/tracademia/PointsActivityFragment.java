@@ -1,5 +1,7 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -100,9 +102,13 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         //respond to clicks
         if(v.getId()==R.id.scanBarcode){
-            FragmentIntentIntegrator scanIntegrator = new FragmentIntentIntegrator(this);
-            scanIntegrator.initiateScan();
+            StartBarcodeScan();
         }
+    }
+
+    private void StartBarcodeScan(){
+        FragmentIntentIntegrator scanIntegrator = new FragmentIntentIntegrator(this);
+        scanIntegrator.initiateScan();
     }
 
     @Override
@@ -113,9 +119,26 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
         if (scanResult != null) {
             String libraryNumber = scanResult.getContents();
 
+            StudentPoints sp =  mAdapter.getStudentPointsByLibraryNumber(libraryNumber);
+
+            if (sp == null)
+            {
+                new AlertDialog.Builder(getActivity())
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setTitle(R.string.confirm_title)
+                        .setMessage("Sorry, something went wrong. Do you want to try again?")
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                StartBarcodeScan();
+                            }
+                        }).setNegativeButton(R.string.cancel, null)
+                        .show();
+                return;
+            }
             Intent awardIntent = new Intent(getActivity(), AwardPointsActivity.class);
-            awardIntent.putExtra(getString(R.string.libraryNumber), libraryNumber);
-            //TODO:: get and send student to next activity
+            awardIntent.putExtra(getString(R.string._id), sp.get_id());
+            awardIntent.putExtra(getString(R.string.name), sp.getDisplayName());
             startActivity(awardIntent);
         }
         else{
@@ -173,11 +196,11 @@ class RequestTask extends AsyncTask<String, String, String> {
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
 
-                List<AbstractMap.SimpleEntry<String, String>> params = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
-                params.add(new AbstractMap.SimpleEntry<String, String>("login", "true"));
-                params.add(new AbstractMap.SimpleEntry<String, String>("remember", "0"));
-                params.add(new AbstractMap.SimpleEntry<String, String>("password", "a"));
-                params.add(new AbstractMap.SimpleEntry<String, String>("username", "a"));
+                List<AbstractMap.SimpleEntry<String, String>> params = new ArrayList<>();
+                params.add(new AbstractMap.SimpleEntry<>("login", "true"));
+                params.add(new AbstractMap.SimpleEntry<>("remember", "0"));
+                params.add(new AbstractMap.SimpleEntry<>("password", "a"));
+                params.add(new AbstractMap.SimpleEntry<>("username", "a"));
 
                 try {
                     OutputStream os = urlConnection.getOutputStream();
@@ -189,6 +212,7 @@ class RequestTask extends AsyncTask<String, String, String> {
                     os.close();
 
                     Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
+                    //TODO:: IF the first thing in the map is not 201: then an error occured. Add check here.
                     List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
 
                     if (cookiesHeader != null) {

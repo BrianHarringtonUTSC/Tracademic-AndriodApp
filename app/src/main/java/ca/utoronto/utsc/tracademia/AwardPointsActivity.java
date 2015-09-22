@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class AwardPointsActivity  extends AppCompatActivity implements OnClickListener{
     int num_points;
-    String libraryNumber;
+    String displayName, _id;
     PointType pointType;
     NumberPicker typePicker, pointsPicker;
     StudentPoints studentPoints;
@@ -36,9 +36,10 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
         setContentView(R.layout.award_points);
 
         Intent intent = getIntent();
-        libraryNumber = intent.getStringExtra(getString(R.string.libraryNumber));
+        displayName = intent.getStringExtra(getString(R.string.name));
+        _id = intent.getStringExtra(getString(R.string._id));
 
-        ((Button)findViewById(R.id.give_point)).setOnClickListener(this);
+        findViewById(R.id.give_point).setOnClickListener(this);
 
         typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
         PointType[] pt = PointType.values();
@@ -81,10 +82,12 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
         if(v.getId()==R.id.give_point){
             pointType = PointType.values()[typePicker.getValue()];
             num_points = pointsPicker.getValue();
+
+
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .setTitle(R.string.confirm_title)
-                    .setMessage("Awarding "+ libraryNumber +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
+                    .setMessage("Awarding "+ displayName +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
                     .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
