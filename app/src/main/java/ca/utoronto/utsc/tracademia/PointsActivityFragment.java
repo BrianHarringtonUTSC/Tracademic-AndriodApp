@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Console;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -27,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -166,7 +169,7 @@ class RequestTask extends AsyncTask<String, String, String> {
     private void LogIn(String urlPath) {
         if (!hasLoggedin) {
             try {
-                URL url = new URL(urlPath + "/api/User");
+                URL url = new URL(urlPath + "api/User");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
 
@@ -230,12 +233,14 @@ class RequestTask extends AsyncTask<String, String, String> {
         LogIn(params[0]);
         try {
             URL url = new URL(params[0]+params[1]);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            URLConnection urlConnection = url.openConnection();
+            String code = null;
             if (msCookieManager.getCookieStore().getCookies().size() > 0){
-                urlConnection.setRequestProperty("DefaultHttpClient",
-                        TextUtils.join(";", msCookieManager.getCookieStore().getCookies()));
+                code =   TextUtils.join(";", msCookieManager.getCookieStore().getCookies());
             }
             try {
+                urlConnection.setRequestProperty("Cookie", code);
+                urlConnection.connect();
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line;
@@ -246,7 +251,6 @@ class RequestTask extends AsyncTask<String, String, String> {
                 br.close();
                 responseBody = sb.toString();
             } finally {
-                urlConnection.disconnect();
             }
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
