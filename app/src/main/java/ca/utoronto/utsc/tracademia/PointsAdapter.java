@@ -18,9 +18,6 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     private List<StudentPoints> mDataSet;
 
-    private TextView mainText;
-    private TextView subText;
-
     /**
      * Initialize the dataset of the Adapter.
      *
@@ -32,16 +29,14 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public PointsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view.
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
-        mainText = (TextView) v.findViewById(R.id.maintext);
-        subText = (TextView) v.findViewById(R.id.subtext);
+        Log.d(TAG, "Create View Holder.");
+
         return new ViewHolder(v);
     }
-
-
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
@@ -51,8 +46,8 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         StudentPoints studentPoints = mDataSet.get(position);
-        mainText.setText(studentPoints.getDisplayName());
-        subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
+        viewHolder.mainText.setText(studentPoints.getDisplayName());
+        viewHolder.subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -62,15 +57,16 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
     }
 
     public void addItemsToList(StudentPoints... studentPoints) {
+        Log.d(TAG, "add items to list");
         mDataSet.addAll(Arrays.asList(studentPoints));
         notifyDataSetChanged();
     }
 
     //TODO: optimze this
     public StudentPoints getStudentPointsByLibraryNumber(String libraryNumber) {
-        for (StudentPoints studentPoints : mDataSet) {
-            // hello.
-        }
+//        for (StudentPoints studentPoints : mDataSet) {
+//            // hello.
+//        }
 
         return null;
     }
@@ -79,9 +75,14 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView mainText;
+        private TextView subText;
 
         public ViewHolder(View v) {
             super(v);
+            mainText = (TextView) v.findViewById(R.id.maintext);
+            subText = (TextView) v.findViewById(R.id.subtext);
+
             // Define click listener for the ViewHolder's View.
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
