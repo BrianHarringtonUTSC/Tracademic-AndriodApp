@@ -1,23 +1,16 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 /*
     Authors: Umair Idris and Markus Friesen
  */
-public class PointsActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
+
+    public static final String BASE_URL = "https://track-point.cloudapp.net/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

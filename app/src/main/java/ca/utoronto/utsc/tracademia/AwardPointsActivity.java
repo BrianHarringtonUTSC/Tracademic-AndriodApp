@@ -9,20 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by Markus Friesen on 9/15/15.
- * This class is responsible for awarding points to the person that is associated to the library
- * number provided.
- */
 public class AwardPointsActivity  extends AppCompatActivity implements OnClickListener{
     int num_points;
     String displayName, _id;

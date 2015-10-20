@@ -13,33 +13,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.Console;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -151,11 +139,7 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
 class RequestTask extends AsyncTask<String, String, String> {
 
     private final String TAG = "RequestTask";
-
     private PointsAdapter mAdapter;
-    static final String COOKIES_HEADER = "Set-Cookie";
-    static java.net.CookieManager msCookieManager = new java.net.CookieManager();
-    private Boolean hasLoggedin = false;
 
     public RequestTask(PointsAdapter mAdapter) {
         this.mAdapter = mAdapter;
@@ -189,96 +173,34 @@ class RequestTask extends AsyncTask<String, String, String> {
         }
     }
 
-    private void LogIn(String urlPath) {
-        if (!hasLoggedin) {
-            try {
-                URL url = new URL(urlPath + "api/User");
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("POST");
-
-                List<AbstractMap.SimpleEntry<String, String>> params = new ArrayList<>();
-                params.add(new AbstractMap.SimpleEntry<>("login", "true"));
-                params.add(new AbstractMap.SimpleEntry<>("remember", "0"));
-                params.add(new AbstractMap.SimpleEntry<>("password", "a"));
-                params.add(new AbstractMap.SimpleEntry<>("username", "a"));
-
-                try {
-                    OutputStream os = urlConnection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(
-                            new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(getQuery(params));
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
-                    Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
-                    //TODO:: IF the first thing in the map is not 201: then an error occured. Add check here.
-                    List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
-
-                    if (cookiesHeader != null) {
-                        for (String cookie : cookiesHeader) {
-                            msCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-                        }
-                    }
-
-                } finally {
-                    urlConnection.disconnect();
-                }
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-        }
-    }
-    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException
-    {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        for (AbstractMap.SimpleEntry<String, String> pair : params)
-        {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-        }
-
-        return result.toString();
-    }
-
     @Override
     protected String doInBackground(String... params) {
         String responseBody = "";
 
         trustEveryone();
-        LogIn(params[0]);
         try {
-            URL url = new URL(params[0]+params[1]);
+            URL url = new URL(params[0] + params[1]);
             URLConnection urlConnection = url.openConnection();
             String code = null;
-            if (msCookieManager.getCookieStore().getCookies().size() > 0){
-                code =   TextUtils.join(";", msCookieManager.getCookieStore().getCookies());
+            if (LoginActivity.mCookieManager.getCookieStore().getCookies().size() > 0) {
+                code = TextUtils.join(";", LoginActivity.mCookieManager.getCookieStore().getCookies());
             }
-            try {
-                urlConnection.setRequestProperty("Cookie", code);
-                urlConnection.connect();
-                BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    sb.append("\n");
-                }
-                br.close();
-                responseBody = sb.toString();
-            } finally {
+
+            urlConnection.setRequestProperty("Cookie", code);
+            urlConnection.connect();
+            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
             }
-        } catch (Exception e) {
+            br.close();
+            responseBody = sb.toString();
+        } catch (IOException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }
+
         return responseBody;
     }
 
