@@ -27,10 +27,19 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * A login screen that offers login via email/password.
@@ -139,7 +148,7 @@ public class LoginActivity extends Activity {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
 
@@ -219,10 +228,43 @@ public class LoginActivity extends Activity {
             return result.toString();
         }
 
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
+
+        private void trustEveryone() {
+            try {
+                HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+                SSLContext context = SSLContext.getInstance("TLS");
+                context.init(null, new X509TrustManager[]{new X509TrustManager() {
+                    public void checkClientTrusted(X509Certificate[] chain,
+                                                   String authType) throws CertificateException {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] chain,
+                                                   String authType) throws CertificateException {
+                    }
+
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+                }}, new SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(
+                        context.getSocketFactory());
+            } catch (Exception e) { // should never happen
+                e.printStackTrace();
+            }
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                trustEveryone();
                 URL url = new URL(MainActivity.BASE_URL + "api/User");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
@@ -265,7 +307,7 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
+//            showProgress();
 
             if (success) {
                 finish();
