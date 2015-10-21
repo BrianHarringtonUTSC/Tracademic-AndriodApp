@@ -90,7 +90,10 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         //respond to clicks
         if(v.getId()==R.id.scanBarcode){
-            StartBarcodeScan();
+            //TODO:: Make a dual option.
+            ////StartBarcodeScan();
+            Intent intent = new Intent(getActivity(), MagStripeReaderActivity.class);
+            startActivity(intent);
         }
     }
 

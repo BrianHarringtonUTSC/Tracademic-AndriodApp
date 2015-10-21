@@ -41,7 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MagStripReaderActivity" >
+        <activity android:name=".MagStripeReaderActivity" >
         </activity>
     </application>
 
