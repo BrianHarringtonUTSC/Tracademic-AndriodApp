@@ -1,227 +1,250 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.idtechproducts.acom.Common;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import IDTech.MSR.XMLManager.StructConfigParameters;
-import IDTech.MSR.uniMag.UniMagTools.uniMagReaderToolsMsg;
-import IDTech.MSR.uniMag.UniMagTools.uniMagSDKTools;
 import IDTech.MSR.uniMag.uniMagReader;
 import IDTech.MSR.uniMag.uniMagReaderMsg;
 
-public class MagStripeReaderActivity extends AppCompatActivity implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
-    // declaring the instance of the uniMagReader;
-    private uniMagReader myUniMagReader = null;
-    //TODO: REMOVE
-    private uniMagSDKTools firmwareUpdateTool = null;
+public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg {
+    private static final String TAG = "MagStripeReaderActivity";
 
-    private static final String TAG = "MagStripeReader";
-    private StructConfigParameters profile = null;
-    private ProfileDatabase profileDatabase = null;
-    private Handler handler = new Handler();
-
-    //update the powerup status
-    private int percent = 0;
-    private long beginTime = 0;
-    private long beginTimeOfAutoConfig = 0;
-    private byte[] challengeResponse = null;
-    private boolean isUseAutoConfigProfileChecked = false;
-
+    private uniMagReader myUniMagReader;
+    private LoadXMLConfigurationTask loadXMLConfigurationTask;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mag_strip_reader);
 
-        profileDatabase = new ProfileDatabase(this);
-        profileDatabase.initializeDB();
-        isUseAutoConfigProfileChecked = profileDatabase.getIsUseAutoConfigProfile();
+        if(myUniMagReader == null) {
+            myUniMagReader = new uniMagReader(this,this);
+            myUniMagReader.setSaveLogEnable(false);
+            loadXMLConfigurationTask = new LoadXMLConfigurationTask();
+            loadXMLConfigurationTask.execute();
 
-        initializeReader();
-
-        if (myUniMagReader!=null)
-        {
-            beginTime = System.currentTimeMillis();
-
-            if(myUniMagReader.startSwipeCard())
-            {
-                Context context = getApplicationContext();
-                Toast toast = Toast.makeText(context, "Starting read", Toast.LENGTH_SHORT);
-                toast.show();
-                Log.d("Demo Info >>>>>","to startSwipeCard");
-            }
-            else
-                Log.d("Demo Info >>>>>","cannot startSwipeCard");
+            //myUniMagReader.setVerboseLoggingEnable(true);
+//            myUniMagReader.registerListen();
         }
+
+//        myUniMagReader.startSwipeCard();
     }
 
-    private void initializeReader()
-    {
-        if(myUniMagReader!=null){
-            myUniMagReader.unregisterListen();
-            myUniMagReader.release();
-            myUniMagReader = null;
-        }
-        myUniMagReader = new uniMagReader(this,this,uniMagReader.ReaderType.SHUTTLE);
-
-        if (myUniMagReader == null)
-            return;
-
-        if (isUseAutoConfigProfileChecked) {
-            if (profileDatabase.updateProfileFromDB()) {
-                this.profile = profileDatabase.getProfile();
-                Toast.makeText(this, "AutoConfig profile has been loaded.", Toast.LENGTH_LONG).show();
-                handler.post(doConnectUsingProfile);
-            }
-            else {
-                Toast.makeText(this, "No profile found. Please run AutoConfig first.", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            /////////////////////////////////////////////////////////////////////////////////
-            // Network operation is prohibited in the UI Thread if target API is 11 or above.
-            // If target API is 11 or above, please use AsyncTask to avoid errors.
-            myUniMagReader.setXMLFileNameWithPath(null);
-            myUniMagReader.loadingConfigurationXMLFile(true);
-            /////////////////////////////////////////////////////////////////////////////////
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////
-        // Network operation is prohibited in the UI Thread if target API is 11 or above.
-        // If target API is 11 or above, please use AsyncTask to avoid errors.
-
-//        myUniMagReader.loadingConfigurationXMLFile(true);
-        /////////////////////////////////////////////////////////////////////////////////
-
-//        //Initializing SDKTool for firmware update
-//        firmwareUpdateTool = new uniMagSDKTools(this,this);
-//        firmwareUpdateTool.setUniMagReader(myUniMagReader);
-//        myUniMagReader.setSDKToolProxy(firmwareUpdateTool.getSDKToolProxy());
-
-    }
     @Override
-    protected void onDestroy() {
-        if (myUniMagReader != null) {
-            myUniMagReader.unregisterListen();
-            myUniMagReader.stopSwipeCard();
-            myUniMagReader.release();
-        }
-        profileDatabase.closeDB();
+    public void onDestroy() {
+        myUniMagReader.stopSwipeCard();
+        myUniMagReader.unregisterListen();
+        myUniMagReader.release();
         super.onDestroy();
-
     }
 
     @Override
-    public void onReceiveMsgToConnect() {
-        Log.d(TAG, "1");
+    public boolean getUserGrant(int arg0, String arg1) {
+        Log.d(TAG, "getUserGrant -- " + arg1);
+        return true;
     }
 
     @Override
-    public void onReceiveMsgConnected() {
-        Log.d(TAG, "2");
-    }
-
-    @Override
-    public void onReceiveMsgDisconnected() {
-        Log.d(TAG, "3");
-    }
-
-    @Override
-    public void onReceiveMsgTimeout(String s) {
-        Log.d(TAG, "4");
-    }
-
-    @Override
-    public void onReceiveMsgToSwipeCard() {
-        Log.d(TAG, "5");
-    }
-
-    @Override
-    public void onReceiveMsgCommandResult(int i, byte[] bytes) {
-        Log.d(TAG, "6");
-    }
-
-    @Override
-    public void onReceiveMsgCardData(byte b, byte[] bytes) {
-        Log.d(TAG, "7");
-    }
-
-    @Override
-    public void onReceiveMsgProcessingCardData() {
-        Log.d(TAG, "8");
-    }
-
-    @Override
-    public void onReceiveMsgToCalibrateReader() {
-        Log.d(TAG, "9");
-    }
-
-    @Override
-    public void onReceiveMsgSDCardDFailed(String s) {
-        Log.d(TAG, "10");
-    }
-
-    @Override
-    public void onReceiveMsgFailureInfo(int i, String s) {
-        Log.d(TAG, "11");
-    }
-
-    @Override
-    public void onReceiveMsgAutoConfigProgress(int i) {
-        Log.d(TAG, "12");
+    public void onReceiveMsgAutoConfigProgress(int arg0) {
+        // TODO Auto-generated method stub
+        Log.d(TAG, "onReceiveMsgAutoConfigProgress");
     }
 
     @Override
     public void onReceiveMsgAutoConfigProgress(int i, double v, String s) {
-        Log.d(TAG, "13");
+        Log.d(TAG, "onReceiveMsgAutoConfigProgress");
     }
 
     @Override
-    public void onReceiveMsgAutoConfigCompleted(StructConfigParameters structConfigParameters) {
-        Log.d(TAG, "14");
-    }
+    public void onReceiveMsgCardData(byte arg0, byte[] arg1) {
+        Log.d(TAG, "onReceiveMsgCardData");
+        Log.d(TAG, "Successful swipe!");
 
-    @Override
-    public boolean getUserGrant(int i, String s) {
-        Log.d(TAG, "15");
-        return false;
-    }
-
-    @Override
-    public void onReceiveMsgUpdateFirmwareProgress(int i) {
-        Log.d(TAG, "16");
-    }
-
-    @Override
-    public void onReceiveMsgUpdateFirmwareResult(int i) {
-        Log.d(TAG, "17");
-    }
-
-    @Override
-    public void onReceiveMsgChallengeResult(int i, byte[] bytes) {
-        Log.d(TAG, "18");
-    }
-    private Runnable doConnectUsingProfile = new Runnable()
-    {
-        public void run() {
-            if (myUniMagReader != null)
-            {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                myUniMagReader.connectWithProfile(profile);
-            }
+        String strData = new String(arg1);
+        Log.d(TAG, "SWIPE - " + strData);
+        if(myUniMagReader.isSwipeCardRunning()) {
+            myUniMagReader.stopSwipeCard();
         }
-    };
 
+        // Match the data we want.
+//        String pattern = "%B(\\d+)\\^([^\\^]+)\\^(\\d{4})";
+//        Log.d(TAG, pattern);
+//        Pattern r = Pattern.compile(pattern);
+//        Matcher m = r.matcher(strData);
+//        String card = "";
+//        String name = "";
+//        String exp = "";
+//        String data = "";
+//        if(m.find()) {
+//            for(int a = 0; a < m.groupCount(); ++a) {
+//                Log.d(TAG, a + " - "+m.group(a));
+//            }
+//            card = m.group(1);
+//            name = m.group(2);
+//            exp = m.group(3);
+//            data = "Data: " + name + " -- " + card + " -- " + exp;
+//            Log.d(TAG, data);
+//
+//            Message msg = new Message();
+//            msg.obj = data;
+//            swipeHandler.sendMessage(msg);
+//        }
+
+    }
+
+    @Override
+    public void onReceiveMsgProcessingCardData() {
+        Log.d(TAG, "onReceiveMsgProcessingCardData");
+
+    }
+
+    @Override
+    public void onReceiveMsgToCalibrateReader() {
+        Log.d(TAG, "onReceiveMsgToCalibrateReader");
+    }
+
+//    final Handler swipeHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            String text = (String)msg.obj;
+//            TextView dataView = (TextView) findViewById(R.id.text_view);
+//            dataView.setText(text);
+//        }
+//    };
+
+    @Override
+    public void onReceiveMsgCommandResult(int arg0, byte[] arg1) {
+        Log.d(TAG, "onReceiveMsgCommandResult");
+    }
+
+    @Override
+    public void onReceiveMsgConnected() {
+        Log.d(TAG, "onReceiveMsgConnected");
+        Log.d(TAG, "Card reader is connected.");
+    }
+
+    @Override
+    public void onReceiveMsgDisconnected() {
+        Log.d(TAG, "onReceiveMsgDisconnected");
+        if(myUniMagReader.isSwipeCardRunning()) {
+            myUniMagReader.stopSwipeCard();
+        }
+        myUniMagReader.release();
+
+    }
+
+    @Override
+    public void onReceiveMsgFailureInfo(int arg0, String arg1) {
+        Log.d(TAG, "onReceiveMsgFailureInfo -- " + arg1);
+    }
+
+    @Override
+    public void onReceiveMsgSDCardDFailed(String arg0) {
+        Log.d(TAG, "onReceiveMsgSDCardDFailed -- " + arg0);
+    }
+
+    @Override
+    public void onReceiveMsgTimeout(String arg0) {
+        Log.d(TAG, "onReceiveMsgTimeout -- " + arg0);
+        Log.d(TAG,"Timed out!");
+    }
+
+    @Override
+    public void onReceiveMsgToConnect() {
+        Log.d(TAG,"Swiper Powered Up");
+    }
+
+    @Override
+    public void onReceiveMsgToSwipeCard() {
+        Log.d(TAG,"onReceiveMsgToSwipeCard");
+    }
+
+    @Override
+    public void onReceiveMsgAutoConfigCompleted(StructConfigParameters arg0) {
+        Log.d(TAG, "onReceiveMsgAutoConfigCompleted");
+    }
+
+
+
+    String fromStream(InputStream in) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+            out.append(newLine);
+        }
+        return out.toString();
+    }
+
+    private void writeToFile(String data) throws IOException {
+        File file = new File(Common.getApplicationPath(getApplicationContext()), "IDT_uniMagCfg.xml");
+        Log.d(TAG, "writing to" + file.getPath());
+        FileOutputStream stream = new FileOutputStream(file);
+        try {
+            stream.write(data.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            stream.close();
+        }
+    }
+
+    public class LoadXMLConfigurationTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            Log.d(TAG, "Attempting to load xml config");
+
+            File fileDir = getFilesDir();
+            Log.d(TAG, fileDir.getPath());
+
+            Log.d(TAG, Common.getSDRootFilePath());
+            InputStream is = getResources().openRawResource(R.raw.idt_unimagcfg);
+            try {
+                String res = fromStream(is);
+                writeToFile(res);
+
+            } catch (IOException e) {
+                Log.d(TAG, "NOOOOOOOOOOO");
+            }
+
+//            File f = new File(fileDir.getPath(), "idt_unimagcfg.xml");
+            myUniMagReader.setXMLFileNameWithPath(Common.getApplicationPath(getApplicationContext()) + File.separator + "IDT_uniMagCfg.xml");
+            myUniMagReader.loadingConfigurationXMLFile(true);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            Log.d(TAG, "Loaded xml config");
+            if (myUniMagReader != null) {
+                Log.d(TAG, "myUniMagReader isn't null!");
+                myUniMagReader.registerListen();
+                myUniMagReader.startSwipeCard();
+
+            }
+
+        }
+    }
 }
