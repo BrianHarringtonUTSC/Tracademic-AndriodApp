@@ -1,11 +1,17 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.idtechproducts.acom.Common;
 
@@ -28,6 +34,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
     private uniMagReader myUniMagReader;
     private LoadXMLConfigurationTask loadXMLConfigurationTask;
+    private Button btnSwipe;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,18 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 //            myUniMagReader.registerListen();
         }
 
-//        myUniMagReader.startSwipeCard();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            final String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+            ActivityCompat.requestPermissions(this, permissions, 0);
+        }
+
+        btnSwipe = (Button) findViewById(R.id.buttonSwipe);
+        btnSwipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myUniMagReader.startSwipeCard();
+            }
+        });
     }
 
     @Override
@@ -217,7 +235,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             Log.d(TAG, "Attempting to load xml config");
 
             File fileDir = getFilesDir();
-            Log.d(TAG, fileDir.getPath());
 
             Log.d(TAG, Common.getSDRootFilePath());
             InputStream is = getResources().openRawResource(R.raw.idt_unimagcfg);
