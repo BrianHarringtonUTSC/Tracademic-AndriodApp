@@ -55,14 +55,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             final String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
             ActivityCompat.requestPermissions(this, permissions, 0);
         }
-
-        btnSwipe = (Button) findViewById(R.id.buttonSwipe);
-        btnSwipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myUniMagReader.startSwipeCard();
-            }
-        });
     }
 
     @Override
@@ -125,6 +117,8 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 //            swipeHandler.sendMessage(msg);
 //        }
 
+        myUniMagReader.startSwipeCard();
+
     }
 
     @Override
@@ -156,6 +150,8 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     public void onReceiveMsgConnected() {
         Log.d(TAG, "onReceiveMsgConnected");
         Log.d(TAG, "Card reader is connected.");
+
+        myUniMagReader.startSwipeCard();
     }
 
     @Override
@@ -182,6 +178,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     public void onReceiveMsgTimeout(String arg0) {
         Log.d(TAG, "onReceiveMsgTimeout -- " + arg0);
         Log.d(TAG,"Timed out!");
+        myUniMagReader.startSwipeCard();
     }
 
     @Override
@@ -249,6 +246,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 //            File f = new File(fileDir.getPath(), "idt_unimagcfg.xml");
             myUniMagReader.setXMLFileNameWithPath(Common.getApplicationPath(getApplicationContext()) + File.separator + "IDT_uniMagCfg.xml");
             myUniMagReader.loadingConfigurationXMLFile(true);
+
             return true;
         }
 
@@ -258,8 +256,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             if (myUniMagReader != null) {
                 Log.d(TAG, "myUniMagReader isn't null!");
                 myUniMagReader.registerListen();
-                myUniMagReader.startSwipeCard();
-
             }
 
         }
