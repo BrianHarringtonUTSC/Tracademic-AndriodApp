@@ -1,5 +1,6 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,13 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Provide views to RecyclerView with data from mDataSet.
  */
-public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> {
+public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> implements Serializable {
     private static final String TAG = "PointsAdapter";
 
     private List<StudentPoints> mDataSet;
@@ -65,8 +67,16 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
     //TODO: optimze this
     public StudentPoints getStudentPointsByLibraryNumber(String libraryNumber) {
         for (StudentPoints studentPoints : mDataSet) {
-            if (studentPoints.getLibaryNumber() == libraryNumber){
+            if (studentPoints.getLibaryNumber().equals(libraryNumber)){
                 return studentPoints;
+            }
+        }
+        return null;
+    }
+    public StudentPoints getStudentPointsByStudentNumber(String studentNumber) {
+        for (StudentPoints studentPoints : mDataSet) {
+           if (studentPoints.getStudentNumber().equals(studentNumber)){
+               return studentPoints;
             }
         }
         return null;

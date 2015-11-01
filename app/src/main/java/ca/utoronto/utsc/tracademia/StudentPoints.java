@@ -1,12 +1,15 @@
 package ca.utoronto.utsc.tracademia;
 
-public class StudentPoints {
+import java.io.Serializable;
+
+public class StudentPoints implements Serializable {
 
     private String _id;
     private String displayNameCanonical;
     private String displayName;
     private String profileText;
     private String libraryNumber;
+    private String studentNumber;
     private int experiencePoints;
     private int challengePoints;
     private int teachingPoints;
@@ -82,5 +85,13 @@ public class StudentPoints {
 
     public void set__v(int __v) {
         this.__v = __v;
+    }
+
+    public String getStudentNumber() {
+        return this.studentNumber;
+    }
+
+    public void setStudentNumber(String studentNumber) {
+        this.studentNumber = studentNumber;
     }
 }

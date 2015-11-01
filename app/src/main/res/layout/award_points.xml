@@ -43,4 +43,19 @@
         android:layout_alignTop="@+id/pointTypePicker"
         android:layout_toRightOf="@+id/give_point"
         android:layout_toEndOf="@+id/give_point" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:ems="10"
+        android:id="@+id/pointsStudentName"
+        android:layout_below="@+id/pointTypePicker"
+        android:layout_alignLeft="@+id/pointTypePicker"
+        android:layout_alignStart="@+id/pointTypePicker"
+        android:layout_marginTop="52dp"
+        android:editable="false"
+        android:layout_alignRight="@+id/pointsPicker"
+        android:layout_alignEnd="@+id/pointsPicker" />
 </RelativeLayout>

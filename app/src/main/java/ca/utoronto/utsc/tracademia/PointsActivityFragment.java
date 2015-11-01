@@ -22,6 +22,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -84,6 +85,7 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
             //TODO:: Make a dual option.
             ////StartBarcodeScan();
             Intent intent = new Intent(getActivity(), MagStripeReaderActivity.class);
+            intent.putExtra("PointsAdapter", mAdapter);
             startActivity(intent);
         }
     }
