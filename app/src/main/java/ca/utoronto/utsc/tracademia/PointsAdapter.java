@@ -74,9 +74,11 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         return null;
     }
     public StudentPoints getStudentPointsByStudentNumber(String studentNumber) {
-        for (StudentPoints studentPoints : mDataSet) {
-           if (studentPoints.getStudentNumber().equals(studentNumber)){
-               return studentPoints;
+        if (studentNumber != null) {
+            for (StudentPoints studentPoints : mDataSet) {
+                if (studentNumber.equals(studentPoints.getStudentNumber())) {
+                    return studentPoints;
+                }
             }
         }
         return null;
