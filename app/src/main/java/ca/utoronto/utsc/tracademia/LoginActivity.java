@@ -268,6 +268,7 @@ public class LoginActivity extends Activity {
                 URL url = new URL(MainActivity.BASE_URL + "api/User");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("x-no-csrf", "1");
 
                 List<AbstractMap.SimpleEntry<String, String>> cookie_params = new ArrayList<>();
                 cookie_params.add(new AbstractMap.SimpleEntry<>("login", "true"));

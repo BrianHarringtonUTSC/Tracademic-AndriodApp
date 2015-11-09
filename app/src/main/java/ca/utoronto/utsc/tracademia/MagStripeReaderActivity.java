@@ -61,7 +61,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
     private uniMagReader myUniMagReader;
     private LoadXMLConfigurationTask loadXMLConfigurationTask;
-    private Button btnSwipe;
     private EditText sdntUserName;
     protected PointsAdapter mAdapter;
 
@@ -82,10 +81,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             loadXMLConfigurationTask.execute();
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            final String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
-            ActivityCompat.requestPermissions(this, permissions, 0);
-        }
         //getStudent data
         Intent intent = getIntent();
         mAdapter = (PointsAdapter) intent.getSerializableExtra("PointsAdapter");
@@ -154,9 +149,9 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
         String studentNumber = "";
         if(m.find()) {
             String[] cardValues = strData.split(";")[0].split("\\^");
-            for(int a = 0; a < cardValues.length; a++) {
-                if (cardValues[a].matches("^?\\d+$") ){
-                    studentNumber = cardValues[a];
+            for(String cardValue : cardValues) {
+                if (cardValue.matches("^?\\d+$") ){
+                    studentNumber = cardValue;
                     break;
                 }
             }
@@ -274,13 +269,11 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     private void writeToFile(String data) throws IOException {
         File file = new File(Common.getApplicationPath(getApplicationContext()), "IDT_uniMagCfg.xml");
         Log.d(TAG, "writing to" + file.getPath());
-        FileOutputStream stream = new FileOutputStream(file);
-        try {
+
+        try(FileOutputStream stream = new FileOutputStream(file)) {
             stream.write(data.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            stream.close();
         }
     }
 
@@ -357,8 +350,6 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
             Log.d(TAG, "Attempting to load xml config");
 
-            File fileDir = getFilesDir();
-
             Log.d(TAG, Common.getSDRootFilePath());
             InputStream is = getResources().openRawResource(R.raw.idt_unimagcfg);
             try {
@@ -366,10 +357,9 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
                 writeToFile(res);
 
             } catch (IOException e) {
-                Log.d(TAG, "NOOOOOOOOOOO");
+                Log.d(TAG, e.getMessage());
             }
 
-//            File f = new File(fileDir.getPath(), "idt_unimagcfg.xml");
             myUniMagReader.setXMLFileNameWithPath(Common.getApplicationPath(getApplicationContext()) + File.separator + "IDT_uniMagCfg.xml");
             myUniMagReader.loadingConfigurationXMLFile(true);
 

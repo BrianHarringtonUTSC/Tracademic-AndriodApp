@@ -145,7 +145,6 @@ class RequestTask extends AsyncTask<String, String, String> {
     protected String doInBackground(String... params) {
         String responseBody = "";
 
-//        trustEveryone();
         try {
             URL url = new URL(params[0] + params[1]);
             URLConnection urlConnection = url.openConnection();
