@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
@@ -94,11 +97,6 @@ public class LoginActivity extends Activity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
-//    private void populateAutoComplete() {
-//        getLoaderManager().initLoader(0, null, this);
-//    }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -205,9 +203,14 @@ public class LoginActivity extends Activity {
         private final String mEmail;
         private final String mPassword;
 
+        private int responseStatus;
+        private String errorMsg;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
+            responseStatus = 0;
+            errorMsg = "";
         }
 
         private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
@@ -261,8 +264,19 @@ public class LoginActivity extends Activity {
             }
         }
 
+        public boolean networkAvailable() {
+            return ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
+        }
         @Override
         protected Boolean doInBackground(Void... params) {
+
+            if (!networkAvailable()) {
+                responseStatus = -1;
+                errorMsg = "No internet connection";
+                return false;
+            }
+            boolean result = true;
+
             try {
                 trustEveryone();
                 URL url = new URL(MainActivity.BASE_URL + "api/User");
@@ -286,15 +300,24 @@ public class LoginActivity extends Activity {
                     os.close();
 
                     Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
-                    // TODO: IF the first thing in the map is not 201: then an error occured. Add check here.
-                    List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
 
-                    if (cookiesHeader != null) {
-                        for (String cookie : cookiesHeader) {
-                            mCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+                    responseStatus = urlConnection.getResponseCode();
+
+                    if (responseStatus == 200) {
+                        List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
+
+                        if (cookiesHeader != null) {
+                            for (String cookie : cookiesHeader) {
+                                mCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+                            }
+                        } else {
+                            result = false;
+                            errorMsg = "No cookie set.";
                         }
+                    } else {
+                        result = false;
+                        errorMsg = "Response Status " + responseStatus;
                     }
-
                 } finally {
                     urlConnection.disconnect();
                 }
@@ -302,21 +325,27 @@ public class LoginActivity extends Activity {
                 Log.d(TAG, e.getMessage());
             }
 
-            return true;
+            return result;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            Log.d(TAG, "" + responseStatus);
+            Log.d(TAG, errorMsg);
             mAuthTask = null;
-//            showProgress();
+            showProgress(false);
 
             if (success) {
                 finish();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                if (responseStatus == 401) {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+
             }
         }
 
