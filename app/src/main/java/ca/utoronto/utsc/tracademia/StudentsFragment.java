@@ -1,9 +1,6 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,30 +10,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import com.google.gson.Gson;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 
 
-public class StudentsFragment extends Fragment implements View.OnClickListener {
+public class StudentsFragment extends Fragment {
 
     private static final String TAG = "RecyclerViewFragment";
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected StudentsAdapter mAdapter;
-
-    //The + button responsible for opening the barcode scanning app.
-    private ImageButton scanBtn;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,9 +48,6 @@ public class StudentsFragment extends Fragment implements View.OnClickListener {
         RequestTask requestTask = new RequestTask(mAdapter);
         requestTask.execute(MainActivity.BASE_URL, "api/users");
 
-//        scanBtn = (ImageButton)rootView.findViewById(R.id.scanBarcode);
-//        scanBtn.setOnClickListener(this);
-
         return rootView;
     }
 
@@ -68,65 +55,6 @@ public class StudentsFragment extends Fragment implements View.OnClickListener {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save currently selected layout manager.
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-
-    /*
-    Responsible for dealing with any view that is clicked.
-    Currently supports: Opening the Barcode scanning app. If an app doesn't exit, the user
-        will be prompted to download one.
-    */
-    @Override
-    public void onClick(View v) {
-        //respond to clicks
-        if(v.getId()==R.id.scanBarcode){
-            //TODO:: Make a dual option.
-            ////StartBarcodeScan();
-            Intent intent = new Intent(getActivity(), MagStripeReaderActivity.class);
-            intent.putExtra("StudentsAdapter", mAdapter);
-            startActivity(intent);
-        }
-    }
-
-    private void StartBarcodeScan(){
-        FragmentIntentIntegrator scanIntegrator = new FragmentIntentIntegrator(this);
-        scanIntegrator.initiateScan();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-
-        if (scanResult != null) {
-            String libraryNumber = scanResult.getContents();
-
-            Student sp =  mAdapter.getStudentByLibraryNumber(libraryNumber);
-
-            if (sp == null)
-            {
-                new AlertDialog.Builder(getActivity())
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .setTitle(R.string.confirm_title)
-                        .setMessage("Sorry, something went wrong. Do you want to try again?")
-                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                StartBarcodeScan();
-                            }
-                        }).setNegativeButton(R.string.cancel, null)
-                        .show();
-                return;
-            }
-            Intent awardIntent = new Intent(getActivity(), AwardPointsActivity.class);
-            awardIntent.putExtra(getString(R.string._id), sp.get_id());
-            awardIntent.putExtra(getString(R.string.name), sp.getDisplayName());
-            startActivity(awardIntent);
-        }
-        else{
-            //TODO:: CRY
-            Log.d(TAG, "Umair can't figure out toasts yet. Markus also is none the wiser. Sorry, you're out of luck.");
-        }
     }
 }
 
@@ -173,20 +101,5 @@ class RequestTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         Student[] studentArray = new Gson().fromJson(result, Student[].class);
         mAdapter.addItemsToList(studentArray);
-    }
-}
-
-final class FragmentIntentIntegrator extends IntentIntegrator {
-
-    private final Fragment fragment;
-
-    public FragmentIntentIntegrator(Fragment fragment) {
-        super(fragment.getActivity());
-        this.fragment = fragment;
-    }
-
-    @Override
-    protected void startActivityForResult(Intent intent, int code) {
-        fragment.startActivityForResult(intent, code);
     }
 }

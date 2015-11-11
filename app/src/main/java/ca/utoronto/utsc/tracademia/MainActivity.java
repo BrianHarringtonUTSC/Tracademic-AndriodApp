@@ -1,20 +1,32 @@
 package ca.utoronto.utsc.tracademia;
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener {
+public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
+    public static final int GET_STUDENT_NUMBER_REQUEST = 1;
+    public static final String ARG_STUDENT_NUMBER = "studentNumber";
+    public static final String ARG_POSITION = "position";
+
+    private static final String TAG = "MainActivity";
+
     protected StudentsAdapter mAdapter;
+    private ImageButton cardReaderLauncherButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
             return;
         }
 
+        cardReaderLauncherButton = (ImageButton) findViewById(R.id.card_reader_launcher_button);
+        cardReaderLauncherButton.setOnClickListener(this);
+
         mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
 
         StudentsFragment studentsFragment = new StudentsFragment();
@@ -34,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     public void onStudentSelected(int position) {
         StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
         Bundle args = new Bundle();
-        args.putInt(StudentInfoFragment.ARG_POSITION, position);
+        args.putInt(ARG_POSITION, position);
         studentInfoFragment.setArguments(args);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -78,6 +92,41 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
 
     @Override
     public void onStudentSelected(String studentNumber) {
+        List<Student> students = mAdapter.getStudents();
+        for (int i = 0; i < students.size(); i++) {
+            if (students.get(i).getStudentNumber().equals(studentNumber)) {
+                onStudentSelected(i);
+                return;
+            }
+        }
 
+        Log.d(TAG, "Couldn't find student with number " + studentNumber);
+    }
+
+    /*
+    Responsible for dealing with any view that is clicked.
+    Currently supports: Opening the Barcode scanning app. If an app doesn't exit, the user
+        will be prompted to download one.
+    */
+    @Override
+    public void onClick(View v) {
+        //respond to clicks
+        if(v.getId()==R.id.card_reader_launcher_button) {
+            //TODO:: Make a dual option.
+            Intent intent = new Intent(this, MagStripeReaderActivity.class);
+            startActivityForResult(intent, GET_STUDENT_NUMBER_REQUEST);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == GET_STUDENT_NUMBER_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                String studentNumber = data.getStringExtra(ARG_STUDENT_NUMBER);
+                onStudentSelected(studentNumber);
+            }
+        }
     }
 }

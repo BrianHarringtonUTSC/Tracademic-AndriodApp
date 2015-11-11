@@ -1,12 +1,8 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,16 +21,13 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class StudentInfoFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "StudentInfoFragment";
-    public static final String ARG_POSITION = "position";
 
     protected PointType pointType;
     protected NumberPicker typePicker, pointsPicker;
@@ -59,7 +50,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        int position = getArguments().getInt(ARG_POSITION);
+        int position = getArguments().getInt(MainActivity.ARG_POSITION);
         student = mAdapter.getStudents().get(position);
 
         studentInfoTextView = (TextView) getActivity().findViewById(R.id.student_info_textview);
@@ -98,21 +89,6 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
             GivePointsRequestTask requestTask = new GivePointsRequestTask(this);
             requestTask.execute(MainActivity.BASE_URL, "api/users/" + student.get_id() + "/give", "experiencePoints", "1");
-
-//            new AlertDialog.Builder(getActivity())
-//                    .setIcon(android.R.drawable.ic_dialog_info)
-//                    .setTitle(R.string.confirm_title)
-//                    .setMessage("Awarding "+ student.getDisplayName() +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
-//                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            //TODO:: Make API call to give point to student
-//                            Log.d("abc", "hereee");
-//
-//                            requestTask.execute(MainActivity.BASE_URL, "api/users");
-//                        }
-//                    }).setNegativeButton(R.string.cancel, null)
-//                    .show();
         }
     }
 

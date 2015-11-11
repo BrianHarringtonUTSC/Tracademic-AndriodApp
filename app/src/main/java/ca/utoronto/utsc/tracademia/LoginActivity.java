@@ -49,8 +49,8 @@ import javax.net.ssl.X509TrustManager;
  */
 public class LoginActivity extends Activity {
 
-    private static final String COOKIES_HEADER = "Set-Cookie";
     private static final String TAG = "LoginActivity";
+    private static final String COOKIES_HEADER = "Set-Cookie";
 
     static java.net.CookieManager mCookieManager = new java.net.CookieManager();
 

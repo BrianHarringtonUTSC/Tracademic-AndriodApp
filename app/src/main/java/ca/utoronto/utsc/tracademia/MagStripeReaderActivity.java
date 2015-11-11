@@ -2,16 +2,11 @@ package ca.utoronto.utsc.tracademia;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
@@ -24,13 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +27,7 @@ import IDTech.MSR.uniMag.uniMagReader;
 import IDTech.MSR.uniMag.uniMagReaderMsg;
 
 
-public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg, OnClickListener {
+public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg {
     private static final String TAG = "MagStripeReaderActivity";
 
     private uniMagReader myUniMagReader;
@@ -56,7 +44,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.award_points);
+        setContentView(R.layout.activity_mag_stripe_reader);
         if(myUniMagReader == null) {
             myUniMagReader = new uniMagReader(this,this);
             myUniMagReader.setSaveLogEnable(false);
@@ -64,28 +52,28 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             loadXMLConfigurationTask.execute();
         }
 
-        //getStudent data
-        Intent intent = getIntent();
-        mAdapter = (StudentsAdapter) intent.getSerializableExtra("StudentsAdapter");
-
-        //Set Activity data
-        typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
-        StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
-        String[] types = new String[pt.length];
-        for (int i = 0; i < pt.length; i++) {
-            types[i] = pt[i].name();
-        }
-        typePicker.setMinValue(0);
-        typePicker.setMaxValue(pt.length - 1);
-        typePicker.setDisplayedValues(types);
-
-        pointsPicker = (NumberPicker)findViewById(R.id.pointsPicker);
-        pointsPicker.setMinValue(1);
-        pointsPicker.setMaxValue(5);
-
-        sdntUserName = (EditText)findViewById(R.id.pointsStudentName);
-
-        findViewById(R.id.give_point).setOnClickListener(this);
+//        //getStudent data
+//        Intent intent = getIntent();
+//        mAdapter = (StudentsAdapter) intent.getSerializableExtra("StudentsAdapter");
+//
+//        //Set Activity data
+//        typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
+//        StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
+//        String[] types = new String[pt.length];
+//        for (int i = 0; i < pt.length; i++) {
+//            types[i] = pt[i].name();
+//        }
+//        typePicker.setMinValue(0);
+//        typePicker.setMaxValue(pt.length - 1);
+//        typePicker.setDisplayedValues(types);
+//
+//        pointsPicker = (NumberPicker)findViewById(R.id.pointsPicker);
+//        pointsPicker.setMinValue(1);
+//        pointsPicker.setMaxValue(5);
+//
+//        sdntUserName = (EditText)findViewById(R.id.pointsStudentName);
+//
+//        findViewById(R.id.give_point).setOnClickListener(this);
     }
 
     @Override
@@ -138,18 +126,21 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
                     break;
                 }
             }
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+//            Student student = mAdapter.getStudentByStudentNumber(studentNumber);
+//            if (student != null){
+//                _id = student.get_id();
+//                displayName = student.getDisplayName();
+//                sdntUserName.setText(displayName);
+//            } else {
+//                Toast toast = Toast.makeText(getApplicationContext(), "Student isn't registered. Please register student.",  Toast.LENGTH_SHORT);
+//                toast.show();
+//            }
 
-            Student student = mAdapter.getStudentByStudentNumber(studentNumber);
-            if (student != null){
-                _id = student.get_id();
-                displayName = student.getDisplayName();
-                sdntUserName.setText(displayName);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "Student isn't registered. Please register student.",  Toast.LENGTH_SHORT);
-                toast.show();
-            }
-
-        }else {
+        } else {
             Toast toast = Toast.makeText(getApplicationContext(), "Invalid card data.",  Toast.LENGTH_SHORT);
             toast.show();
         }
@@ -249,6 +240,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
         return out.toString();
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void writeToFile(String data) throws IOException {
         File file = new File(Common.getApplicationPath(getApplicationContext()), "IDT_uniMagCfg.xml");
         Log.d(TAG, "writing to" + file.getPath());
@@ -259,72 +251,72 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
             e.printStackTrace();
         }
     }
+//
+//    @Override
+//    public void onClick(View v) {
+//        if(v.getId()==R.id.give_point){
+//            pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
+//            num_points = pointsPicker.getValue();
+//
+//            new AlertDialog.Builder(this)
+//                    .setIcon(android.R.drawable.ic_dialog_info)
+//                    .setTitle(R.string.confirm_title)
+//                    .setMessage("Awarding "+ displayName +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
+//                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            try {
+//                                awardPoints(_id, pointType, num_points);
+//                            } catch (IOException e) {
+//                                Log.d(TAG, "An error occured, See Stack Trace for more errors.");
+//                                e.printStackTrace();
+//                            }
+//                            MagStripeReaderActivity.this.finish();
+//                        }
+//                    }).setNegativeButton(R.string.cancel, null)
+//                    .show();
+//        }
+//    }
 
-    @Override
-    public void onClick(View v) {
-        if(v.getId()==R.id.give_point){
-            pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
-            num_points = pointsPicker.getValue();
-
-            new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .setTitle(R.string.confirm_title)
-                    .setMessage("Awarding "+ displayName +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
-                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                awardPoints(_id, pointType, num_points);
-                            } catch (IOException e) {
-                                Log.d(TAG, "An error occured, See Stack Trace for more errors.");
-                                e.printStackTrace();
-                            }
-                            MagStripeReaderActivity.this.finish();
-                        }
-                    }).setNegativeButton(R.string.cancel, null)
-                    .show();
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    //TODO:: Join POST REQUEST CODE
-    private void awardPoints(String id, StudentInfoFragment.PointType pointType, int num_points) throws IOException {
-
-        List<AbstractMap.SimpleEntry<String, String>> urlParams = new ArrayList<>();
-        urlParams.add(new AbstractMap.SimpleEntry<>("amount", Integer.toString(num_points)));
-        urlParams.add(new AbstractMap.SimpleEntry<>("type", pointType.toString()));
-
-        URL url = new URL(MainActivity.BASE_URL + "api/users/" + id + "/give?" + getQuery(urlParams));
-
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setRequestMethod("POST");
-        if (LoginActivity.mCookieManager.getCookieStore().getCookies().size() > 0) {
-            urlConnection.setRequestProperty("Cookie", TextUtils.join(";", LoginActivity.mCookieManager.getCookieStore().getCookies()));
-        }
-
-        urlConnection.connect();
-    }
+//    @TargetApi(Build.VERSION_CODES.KITKAT)
+//    //TODO:: Join POST REQUEST CODE
+//    private void awardPoints(String id, StudentInfoFragment.PointType pointType, int num_points) throws IOException {
+//
+//        List<AbstractMap.SimpleEntry<String, String>> urlParams = new ArrayList<>();
+//        urlParams.add(new AbstractMap.SimpleEntry<>("amount", Integer.toString(num_points)));
+//        urlParams.add(new AbstractMap.SimpleEntry<>("type", pointType.toString()));
+//
+//        URL url = new URL(MainActivity.BASE_URL + "api/users/" + id + "/give?" + getQuery(urlParams));
+//
+//        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//        urlConnection.setRequestMethod("POST");
+//        if (LoginActivity.mCookieManager.getCookieStore().getCookies().size() > 0) {
+//            urlConnection.setRequestProperty("Cookie", TextUtils.join(";", LoginActivity.mCookieManager.getCookieStore().getCookies()));
+//        }
+//
+//        urlConnection.connect();
+//    }
 
 
 
-    //TODO:: Join this and LoginActivity into one class.
-    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        for (AbstractMap.SimpleEntry<String, String> pair : params) {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-        }
-
-        return result.toString();
-    }
+//    //TODO:: Join this and LoginActivity into one class.
+//    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
+//        StringBuilder result = new StringBuilder();
+//        boolean first = true;
+//
+//        for (AbstractMap.SimpleEntry<String, String> pair : params) {
+//            if (first)
+//                first = false;
+//            else
+//                result.append("&");
+//
+//            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
+//            result.append("=");
+//            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+//        }
+//
+//        return result.toString();
+//    }
 
     public class LoadXMLConfigurationTask extends AsyncTask<Void, Void, Boolean> {
 

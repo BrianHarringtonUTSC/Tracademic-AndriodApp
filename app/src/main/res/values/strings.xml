@@ -13,4 +13,5 @@
     <string name="name">Name</string>
     <string name="_id">_Id</string>
     <string name="submit">Submit</string>
+    <string name="swipe_card_message">Swipe Card</string>
 </resources>

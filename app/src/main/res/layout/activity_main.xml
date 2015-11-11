@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <ImageButton
-        android:id="@+id/scanBarcode"
+        android:id="@+id/card_reader_launcher_button"
         android:layout_width="@dimen/round_button_diameter"
         android:layout_height="@dimen/round_button_diameter"
         android:layout_gravity="right|bottom"
