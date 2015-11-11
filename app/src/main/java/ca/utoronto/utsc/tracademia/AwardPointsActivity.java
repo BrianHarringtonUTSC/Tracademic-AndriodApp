@@ -12,12 +12,12 @@ import android.view.View.OnClickListener;
 import android.widget.NumberPicker;
 
 
-public class AwardPointsActivity  extends AppCompatActivity implements OnClickListener{
+public class AwardPointsActivity  extends AppCompatActivity implements OnClickListener {
     int num_points;
     String displayName, _id;
-    PointType pointType;
+    StudentInfoFragment.PointType pointType;
     NumberPicker typePicker, pointsPicker;
-    StudentPoints studentPoints;
+    Student student;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
         findViewById(R.id.give_point).setOnClickListener(this);
 
         typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
-        PointType[] pt = PointType.values();
+        StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
         String[] types = new String[pt.length];
         for (int i = 0; i < pt.length; i++) {
             types[i] = pt[i].name();
@@ -69,9 +69,8 @@ public class AwardPointsActivity  extends AppCompatActivity implements OnClickLi
 
     public void onClick(View v) {
         if(v.getId()==R.id.give_point){
-            pointType = PointType.values()[typePicker.getValue()];
+            pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
             num_points = pointsPicker.getValue();
-
 
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_info)

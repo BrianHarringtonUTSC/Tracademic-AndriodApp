@@ -330,8 +330,6 @@ public class LoginActivity extends Activity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            Log.d(TAG, "" + responseStatus);
-            Log.d(TAG, errorMsg);
             mAuthTask = null;
             showProgress(false);
 
@@ -346,7 +344,6 @@ public class LoginActivity extends Activity {
                     mPasswordView.requestFocus();
                 }
                 Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-
             }
         }
 

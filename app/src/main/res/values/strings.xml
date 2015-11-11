@@ -12,4 +12,5 @@
     <string name="linear_layout_manager">Linear Layout Manager</string>
     <string name="name">Name</string>
     <string name="_id">_Id</string>
+    <string name="submit">Submit</string>
 </resources>

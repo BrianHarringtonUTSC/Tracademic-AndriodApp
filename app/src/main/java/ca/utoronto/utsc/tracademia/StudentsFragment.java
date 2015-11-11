@@ -1,11 +1,11 @@
 package ca.utoronto.utsc.tracademia;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -22,20 +22,18 @@ import com.google.zxing.integration.android.IntentResult;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
 
-public class PointsActivityFragment extends Fragment implements View.OnClickListener {
+public class StudentsFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "RecyclerViewFragment";
-    private static String BASE_URL = "https://track-point.cloudapp.net/";
 
-    protected PointsAdapter mAdapter;
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
+    protected StudentsAdapter mAdapter;
 
     //The + button responsible for opening the barcode scanning app.
     private ImageButton scanBtn;
@@ -43,8 +41,10 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.recycler_view_frag, container, false);
+        View rootView = inflater.inflate(R.layout.recycler_view, container, false);
         rootView.setTag(TAG);
+
+        mAdapter = ((OnStudentSelectedListener) getActivity()).getStudentsAdapter();
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
@@ -53,15 +53,13 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
         // elements are laid out.
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new PointsAdapter(new ArrayList<StudentPoints>());
         mRecyclerView.setAdapter(mAdapter);
 
         RequestTask requestTask = new RequestTask(mAdapter);
-        requestTask.execute(BASE_URL, "api/users");
+        requestTask.execute(MainActivity.BASE_URL, "api/users");
 
-        scanBtn = (ImageButton)rootView.findViewById(R.id.scanBarcode);
-        scanBtn.setOnClickListener(this);
+//        scanBtn = (ImageButton)rootView.findViewById(R.id.scanBarcode);
+//        scanBtn.setOnClickListener(this);
 
         return rootView;
     }
@@ -85,7 +83,7 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
             //TODO:: Make a dual option.
             ////StartBarcodeScan();
             Intent intent = new Intent(getActivity(), MagStripeReaderActivity.class);
-            intent.putExtra("PointsAdapter", mAdapter);
+            intent.putExtra("StudentsAdapter", mAdapter);
             startActivity(intent);
         }
     }
@@ -103,7 +101,7 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
         if (scanResult != null) {
             String libraryNumber = scanResult.getContents();
 
-            StudentPoints sp =  mAdapter.getStudentPointsByLibraryNumber(libraryNumber);
+            Student sp =  mAdapter.getStudentByLibraryNumber(libraryNumber);
 
             if (sp == null)
             {
@@ -135,9 +133,9 @@ public class PointsActivityFragment extends Fragment implements View.OnClickList
 class RequestTask extends AsyncTask<String, String, String> {
 
     private final String TAG = "RequestTask";
-    private PointsAdapter mAdapter;
+    private StudentsAdapter mAdapter;
 
-    public RequestTask(PointsAdapter mAdapter) {
+    public RequestTask(StudentsAdapter mAdapter) {
         this.mAdapter = mAdapter;
     }
 
@@ -173,8 +171,8 @@ class RequestTask extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        StudentPoints[] studentPointsArray = new Gson().fromJson(result, StudentPoints[].class);
-        mAdapter.addItemsToList(studentPointsArray);
+        Student[] studentArray = new Gson().fromJson(result, Student[].class);
+        mAdapter.addItemsToList(studentArray);
     }
 }
 
@@ -192,4 +190,3 @@ final class FragmentIntentIntegrator extends IntentIntegrator {
         fragment.startActivityForResult(intent, code);
     }
 }
-

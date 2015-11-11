@@ -1,6 +1,5 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,41 +14,40 @@ import java.util.List;
 /**
  * Provide views to RecyclerView with data from mDataSet.
  */
-public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder> implements Serializable {
-    private static final String TAG = "PointsAdapter";
+public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHolder> implements Serializable {
+    private static final String TAG = "StudentsAdapter";
 
-    private List<StudentPoints> mDataSet;
+    private List<Student> mDataSet;
+    private OnStudentSelectedListener mCallback;
 
     /**
      * Initialize the dataset of the Adapter.
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public PointsAdapter(List<StudentPoints> dataSet) {
+    public StudentsAdapter(List<Student> dataSet, OnStudentSelectedListener callback) {
         mDataSet = dataSet;
+        mCallback = callback;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public PointsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public StudentsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view.
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
-        Log.d(TAG, "Create View Holder.");
 
-        return new ViewHolder(v);
+        return new ViewHolder(v, mCallback);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
-
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        StudentPoints studentPoints = mDataSet.get(position);
-        viewHolder.mainText.setText(studentPoints.getDisplayName());
-        viewHolder.subText.setText("XP: " + studentPoints.getExperiencePoints() + "    CP: " + studentPoints.getChallengePoints() + "    RP: " + studentPoints.getTeachingPoints());
+        Student student = mDataSet.get(position);
+        viewHolder.mainText.setText(student.getDisplayName());
+        viewHolder.subText.setText("XP: " + student.getExperiencePoints() + "    CP: " + student.getChallengePoints() + "    RP: " + student.getTeachingPoints());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -58,26 +56,28 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
         return mDataSet.size();
     }
 
-    public void addItemsToList(StudentPoints... studentPoints) {
-        Log.d(TAG, "add items to list");
+    public void addItemsToList(Student... studentPoints) {
         mDataSet.addAll(Arrays.asList(studentPoints));
         notifyDataSetChanged();
     }
 
+    public List<Student> getStudents() {
+        return mDataSet;
+    }
     //TODO: optimze this
-    public StudentPoints getStudentPointsByLibraryNumber(String libraryNumber) {
-        for (StudentPoints studentPoints : mDataSet) {
-            if (studentPoints.getLibaryNumber().equals(libraryNumber)){
-                return studentPoints;
+    public Student getStudentByLibraryNumber(String libraryNumber) {
+        for (Student student : mDataSet) {
+            if (student.getLibaryNumber().equals(libraryNumber)){
+                return student;
             }
         }
         return null;
     }
-    public StudentPoints getStudentPointsByStudentNumber(String studentNumber) {
+    public Student getStudentByStudentNumber(String studentNumber) {
         if (studentNumber != null) {
-            for (StudentPoints studentPoints : mDataSet) {
-                if (studentNumber.equals(studentPoints.getStudentNumber())) {
-                    return studentPoints;
+            for (Student student : mDataSet) {
+                if (studentNumber.equals(student.getStudentNumber())) {
+                    return student;
                 }
             }
         }
@@ -90,17 +90,19 @@ public class PointsAdapter extends RecyclerView.Adapter<PointsAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mainText;
         private TextView subText;
+        private OnStudentSelectedListener mCallback;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, OnStudentSelectedListener callback) {
             super(v);
             mainText = (TextView) v.findViewById(R.id.maintext);
             subText = (TextView) v.findViewById(R.id.subtext);
+            mCallback = callback;
 
             // Define click listener for the ViewHolder's View.
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
+                    mCallback.onStudentSelected(getAdapterPosition());
                 }
             });
 

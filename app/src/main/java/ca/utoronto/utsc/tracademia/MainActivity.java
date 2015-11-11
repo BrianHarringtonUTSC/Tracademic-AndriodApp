@@ -1,21 +1,38 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 /*
-    Authors: Umair Idris and Markus Friesen
+ *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
+    protected StudentsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_points);
+        setContentView(R.layout.activity_main);
+
+        // If being restored don't create new frag
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
+
+        StudentsFragment studentsFragment = new StudentsFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container, studentsFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
 
@@ -39,5 +56,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public StudentsAdapter getStudentsAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    public void onStudentSelected(int position) {
+        StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
+        Bundle args = new Bundle();
+        args.putInt(StudentInfoFragment.ARG_POSITION, position);
+        studentInfoFragment.setArguments(args);
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, studentInfoFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onStudentSelected(String studentNumber) {
+
     }
 }

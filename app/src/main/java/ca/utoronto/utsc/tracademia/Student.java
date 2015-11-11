@@ -2,7 +2,7 @@ package ca.utoronto.utsc.tracademia;
 
 import java.io.Serializable;
 
-public class StudentPoints implements Serializable {
+public class Student implements Serializable {
 
     private String _id;
     private String displayNameCanonical;

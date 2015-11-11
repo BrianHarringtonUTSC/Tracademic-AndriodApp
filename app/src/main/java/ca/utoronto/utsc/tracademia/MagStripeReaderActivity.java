@@ -1,24 +1,17 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
@@ -26,28 +19,18 @@ import android.widget.Toast;
 import com.idtechproducts.acom.Common;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,11 +45,11 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     private uniMagReader myUniMagReader;
     private LoadXMLConfigurationTask loadXMLConfigurationTask;
     private EditText sdntUserName;
-    protected PointsAdapter mAdapter;
+    protected StudentsAdapter mAdapter;
 
-    PointType pointType;
+    StudentInfoFragment.PointType pointType;
     NumberPicker typePicker, pointsPicker;
-    StudentPoints studentPoints;
+    Student student;
     String displayName, _id;
     int num_points;
 
@@ -83,11 +66,11 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
         //getStudent data
         Intent intent = getIntent();
-        mAdapter = (PointsAdapter) intent.getSerializableExtra("PointsAdapter");
+        mAdapter = (StudentsAdapter) intent.getSerializableExtra("StudentsAdapter");
 
         //Set Activity data
         typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
-        PointType[] pt = PointType.values();
+        StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
         String[] types = new String[pt.length];
         for (int i = 0; i < pt.length; i++) {
             types[i] = pt[i].name();
@@ -156,7 +139,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
                 }
             }
 
-            StudentPoints student = mAdapter.getStudentPointsByStudentNumber(studentNumber);
+            Student student = mAdapter.getStudentByStudentNumber(studentNumber);
             if (student != null){
                 _id = student.get_id();
                 displayName = student.getDisplayName();
@@ -243,7 +226,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
     @Override
     public void onReceiveMsgToSwipeCard() {
-        Log.d(TAG,"onReceiveMsgToSwipeCard");
+        Log.d(TAG, "onReceiveMsgToSwipeCard");
     }
 
     @Override
@@ -280,7 +263,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.give_point){
-            pointType = PointType.values()[typePicker.getValue()];
+            pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
             num_points = pointsPicker.getValue();
 
             new AlertDialog.Builder(this)
@@ -305,7 +288,7 @@ public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     //TODO:: Join POST REQUEST CODE
-    private void awardPoints(String id, PointType pointType, int num_points) throws IOException {
+    private void awardPoints(String id, StudentInfoFragment.PointType pointType, int num_points) throws IOException {
 
         List<AbstractMap.SimpleEntry<String, String>> urlParams = new ArrayList<>();
         urlParams.add(new AbstractMap.SimpleEntry<>("amount", Integer.toString(num_points)));

@@ -1,18 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none" />
 
     <ImageButton
         android:id="@+id/scanBarcode"
         android:layout_width="@dimen/round_button_diameter"
         android:layout_height="@dimen/round_button_diameter"
-        android:layout_gravity="left"
+        android:layout_gravity="right|bottom"
         android:layout_marginBottom="15dp"
         android:background="@drawable/oval"
         android:elevation="@dimen/elevation_high"
@@ -23,8 +18,5 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp">
-
     </ImageButton>
-
-
-</RelativeLayout>
+</FrameLayout>

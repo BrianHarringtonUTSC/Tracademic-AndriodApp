@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/student_info_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="@dimen/subtext_margin_top"
+        android:text="@string/element_text"
+        android:textSize="@dimen/sub_text_size" />
+
+    <NumberPicker
+        android:id="@+id/point_type_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="112dp"
+        android:layout_below="@+id/student_info_textview"
+        android:layout_toLeftOf="@+id/give_points_button"
+        android:layout_toStartOf="@+id/give_points_button" />
+
+    <NumberPicker
+        android:id="@+id/points_amount_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/point_type_picker" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/submit"
+        android:id="@+id/give_points_button"
+        android:layout_marginBottom="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@android:drawable/ic_input_add"
+        android:textColor="#ffffff"
+        android:background="#002A5C" />
+
+</RelativeLayout>

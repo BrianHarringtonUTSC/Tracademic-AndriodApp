@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.utoronto.utsc.tracademia" >
 
-    <uses-sdk android:minSdkVersion="11"
+    <uses-sdk android:minSdkVersion="17"
         android:targetSdkVersion="22"/>
 
 
