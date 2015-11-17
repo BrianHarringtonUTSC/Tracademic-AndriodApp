@@ -22,19 +22,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.AbstractMap;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,8 +136,14 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute();
+
+            Map<String, String> requestParams = new HashMap<>();
+            requestParams.put("login", "true");
+            requestParams.put("remember", "0");
+            requestParams.put("password", email);
+            requestParams.put("username", password);
+            mAuthTask = new UserLoginTask(requestParams);
+            mAuthTask.execute(MainActivity.BASE_URL + "api/User");
         }
     }
 
@@ -196,37 +195,17 @@ public class LoginActivity extends Activity {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<String, String, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
 
+        private final Map<String, String> requestParams;
         private int responseStatus;
         private String errorMsg;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        UserLoginTask(Map<String, String> requestParams) {
+            this.requestParams = requestParams;
             responseStatus = 0;
             errorMsg = "";
-        }
-
-        private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
-            StringBuilder result = new StringBuilder();
-            boolean first = true;
-
-            for (AbstractMap.SimpleEntry<String, String> pair : params) {
-                if (first)
-                    first = false;
-                else
-                    result.append("&");
-
-                result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
-                result.append("=");
-                result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-            }
-
-            return result.toString();
         }
 
         @Override
@@ -267,7 +246,7 @@ public class LoginActivity extends Activity {
             return ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
         }
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(String... params) {
 
             if (!networkAvailable()) {
                 responseStatus = -1;
@@ -277,25 +256,13 @@ public class LoginActivity extends Activity {
             boolean result = true;
 
             try {
-                URL url = new URL(MainActivity.BASE_URL + "api/User");
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("x-no-csrf", "1");
 
-                List<AbstractMap.SimpleEntry<String, String>> cookie_params = new ArrayList<>();
-                cookie_params.add(new AbstractMap.SimpleEntry<>("login", "true"));
-                cookie_params.add(new AbstractMap.SimpleEntry<>("remember", "0"));
-                cookie_params.add(new AbstractMap.SimpleEntry<>("password", mPassword));
-                cookie_params.add(new AbstractMap.SimpleEntry<>("username", mEmail));
+                HttpURLConnection urlConnection = HTTPClient.getOpenHttpConnection(params[0], "POST");
+
+                String requestBody = HTTPClient.buildRequestBody(requestParams);
+                HTTPClient.writeOutputStream(urlConnection, requestBody);
+
                 try {
-                    OutputStream os = urlConnection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(
-                            new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(getQuery(cookie_params));
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
                     Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
 
                     responseStatus = urlConnection.getResponseCode();
