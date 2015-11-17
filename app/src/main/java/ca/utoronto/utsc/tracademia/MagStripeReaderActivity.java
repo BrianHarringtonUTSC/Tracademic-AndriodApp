@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -27,7 +28,7 @@ import IDTech.MSR.uniMag.uniMagReader;
 import IDTech.MSR.uniMag.uniMagReaderMsg;
 
 
-public class MagStripeReaderActivity extends Activity implements uniMagReaderMsg {
+public class MagStripeReaderActivity extends AppCompatActivity implements uniMagReaderMsg {
     private static final String TAG = "MagStripeReaderActivity";
 
     private uniMagReader myUniMagReader;
