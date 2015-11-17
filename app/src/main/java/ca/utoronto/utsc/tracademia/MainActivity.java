@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,7 +18,7 @@ import java.util.List;
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     private static final String TAG = "MainActivity";
 
     protected StudentsAdapter mAdapter;
+    protected FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,11 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
 
         mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
 
+        fragmentManager = getFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(this);
+
         StudentsFragment studentsFragment = new StudentsFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, studentsFragment);
         transaction.commit();
     }
@@ -131,11 +136,25 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(fragmentManager.getBackStackEntryCount() > 0);
+        }
+    }
+
+    @Override
+    public boolean  onSupportNavigateUp() {
+        fragmentManager.popBackStack();
+        return true;
     }
 }
