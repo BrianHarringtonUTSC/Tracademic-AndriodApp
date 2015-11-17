@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     private static final String TAG = "MainActivity";
 
     protected StudentsAdapter mAdapter;
-    private ImageButton cardReaderLauncherButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
             return;
         }
 
-        cardReaderLauncherButton = (ImageButton) findViewById(R.id.card_reader_launcher_button);
+        ImageButton cardReaderLauncherButton = (ImageButton) findViewById(R.id.card_reader_launcher_button);
         cardReaderLauncherButton.setOnClickListener(this);
 
         mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);

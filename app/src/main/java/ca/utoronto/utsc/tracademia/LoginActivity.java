@@ -52,8 +52,6 @@ public class LoginActivity extends Activity {
     private static final String TAG = "LoginActivity";
     private static final String COOKIES_HEADER = "Set-Cookie";
 
-    static java.net.CookieManager mCookieManager = new java.net.CookieManager();
-
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -234,6 +232,7 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPreExecute() {
             showProgress(true);
+            trustEveryone();
         }
 
         private void trustEveryone() {
@@ -278,7 +277,6 @@ public class LoginActivity extends Activity {
             boolean result = true;
 
             try {
-                trustEveryone();
                 URL url = new URL(MainActivity.BASE_URL + "api/User");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
@@ -289,7 +287,6 @@ public class LoginActivity extends Activity {
                 cookie_params.add(new AbstractMap.SimpleEntry<>("remember", "0"));
                 cookie_params.add(new AbstractMap.SimpleEntry<>("password", mPassword));
                 cookie_params.add(new AbstractMap.SimpleEntry<>("username", mEmail));
-
                 try {
                     OutputStream os = urlConnection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(
@@ -308,7 +305,7 @@ public class LoginActivity extends Activity {
 
                         if (cookiesHeader != null) {
                             for (String cookie : cookiesHeader) {
-                                mCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+                                HTTPClient.mCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
                             }
                         } else {
                             result = false;

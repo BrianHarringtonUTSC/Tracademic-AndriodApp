@@ -3,7 +3,6 @@ package ca.utoronto.utsc.tracademia;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +11,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StudentInfoFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "StudentInfoFragment";
@@ -87,8 +75,11 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
             int num_points = pointsPicker.getValue();
 //            PointType pointType = typePicker.getValue();
 
-            GivePointsRequestTask requestTask = new GivePointsRequestTask(this);
-            requestTask.execute(MainActivity.BASE_URL, "api/users/" + student.get_id() + "/give", "experiencePoints", "1");
+            Map<String, String> params  = new HashMap<>();
+            params.put("type", "experiencePoints");
+            params.put("amount", "1");
+            GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
+            requestTask.execute(MainActivity.BASE_URL + "api/users/" + student.get_id() + "/give");
         }
     }
 
@@ -97,86 +88,33 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         Teaching,
         Challenge
     }
-}
 
+    class GivePointsRequestTask extends AsyncTask<String, String, String> {
+        private final Map<String, String> requestParams;
 
-class GivePointsRequestTask extends AsyncTask<String, String, String> {
-
-    private final String TAG = "RequestTask";
-    private Fragment fragment;
-
-    public GivePointsRequestTask(Fragment fragment) {
-        this.fragment = fragment;
-    }
-
-    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        for (AbstractMap.SimpleEntry<String, String> pair : params) {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+        public GivePointsRequestTask(Map<String, String> params) {
+            this.requestParams = params;
         }
 
-        return result.toString();
-    }
-
-    @Override
-    protected String doInBackground(String... params) {
-        String responseBody = "";
-
-        try {
-            URL url = new URL(params[0] + params[1]);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("x-no-csrf", "1");
-
-            List<AbstractMap.SimpleEntry<String, String>> cookie_params = new ArrayList<>();
-            cookie_params.add(new AbstractMap.SimpleEntry<>("type", params[2]));
-            cookie_params.add(new AbstractMap.SimpleEntry<>("amount", params[3]));
-
-            urlConnection.setRequestProperty("type", params[2]);
-            urlConnection.setRequestProperty("amount", params[3]);
-
-            OutputStream os = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getQuery(cookie_params));
-            writer.flush();
-            writer.close();
-            os.close();
-
-            String cookie = "";
-            if (LoginActivity.mCookieManager.getCookieStore().getCookies().size() > 0) {
-                cookie = TextUtils.join(";", LoginActivity.mCookieManager.getCookieStore().getCookies());
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                HTTPClient.postWebpage(params[0], requestParams);
+                return "";
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+                return e.getMessage();
             }
-
-            urlConnection.setRequestProperty("Cookie", cookie);
-            urlConnection.connect();
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-                sb.append("\n");
-            }
-            br.close();
-            responseBody = sb.toString();
-        } catch (IOException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
         }
 
-        return responseBody;
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        Toast.makeText(fragment.getActivity().getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+        @Override
+        protected void onPostExecute(String result) {
+            String toastMessage = "Success";
+            if (result.length() > 0) {
+                toastMessage = "Failed: " + result;
+            }
+            Toast.makeText(getActivity().getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 }
+
