@@ -73,13 +73,17 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         if(v.getId()==R.id.give_points_button){
             pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
             int num_points = pointsPicker.getValue();
-//            PointType pointType = typePicker.getValue();
+            if (num_points > 0) {
+                PointType pointType = PointType.values()[typePicker.getValue()];
+                String type = pointType.name().toLowerCase() + "Points";
 
-            Map<String, String> params  = new HashMap<>();
-            params.put("type", "experiencePoints");
-            params.put("amount", "1");
-            GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
-            requestTask.execute(MainActivity.BASE_URL + "api/users/" + student.get_id() + "/give");
+                Map<String, String> params  = new HashMap<>();
+                params.put("type", type);
+                params.put("amount", String.valueOf(num_points));
+
+                GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
+                requestTask.execute(MainActivity.BASE_URL + "api/users/" + student.get_id() + "/give");
+            }
         }
     }
 
