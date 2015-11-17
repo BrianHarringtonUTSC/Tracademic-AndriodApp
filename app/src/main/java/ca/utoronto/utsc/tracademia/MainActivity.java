@@ -1,5 +1,6 @@
 package ca.utoronto.utsc.tracademia;
 
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
         StudentsFragment studentsFragment = new StudentsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.fragment_container, studentsFragment);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -126,6 +126,16 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
                 String studentNumber = data.getStringExtra(ARG_STUDENT_NUMBER);
                 onStudentSelected(studentNumber);
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
         }
     }
 }
