@@ -50,7 +50,6 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         // with that element
         Student student = mFilteredStudents.get(position);
         viewHolder.mainText.setText(student.getUsername());
-        viewHolder.subText.setText("XP: " + student.getExperiencePoints() + "    CP: " + student.getChallengePoints() + "    RP: " + student.getTeachingPoints());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -74,10 +73,10 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         return mFilteredStudents;
     }
 
-    public Student getStudentByUsername(String username) {
-        if (username != null) {
+    public Student getStudentByStudentNumber(String studentNumber) {
+        if (studentNumber != null) {
             for (Student student : mStudents) {
-                if (username.equals(student.getUsername())) {
+                if (studentNumber.equals(student.getStudentNumber())) {
                     return student;
                 }
             }
@@ -101,7 +100,6 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         public ViewHolder(View v, OnStudentSelectedListener callback) {
             super(v);
             mainText = (TextView) v.findViewById(R.id.maintext);
-            subText = (TextView) v.findViewById(R.id.subtext);
             mCallback = callback;
 
             // Define click listener for the ViewHolder's View.

@@ -129,25 +129,15 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
                 }
             }
             Intent resultIntent = new Intent();
-            resultIntent.putExtra(MainActivity.ARG_USERNAME, studentNumber);
+            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
             setResult(Activity.RESULT_OK, resultIntent);
+            myUniMagReader.disconnect();
             finish();
-//            Student student = mAdapter.getStudentByUsername(studentNumber);
-//            if (student != null){
-//                _id = student.get_id();
-//                displayName = student.getDisplayName();
-//                sdntUserName.setText(displayName);
-//            } else {
-//                Toast toast = Toast.makeText(getApplicationContext(), "Student isn't registered. Please register student.",  Toast.LENGTH_SHORT);
-//                toast.show();
-//            }
-
         } else {
             Toast toast = Toast.makeText(getApplicationContext(), "Invalid card data.",  Toast.LENGTH_SHORT);
             toast.show();
+            myUniMagReader.startSwipeCard();
         }
-
-        myUniMagReader.startSwipeCard();
     }
 
     @Override
