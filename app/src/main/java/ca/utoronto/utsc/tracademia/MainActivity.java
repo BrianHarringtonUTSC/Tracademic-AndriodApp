@@ -22,8 +22,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, SearchView.OnQueryTextListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
-    public static final int GET_UTORID_REQUEST = 1;
-    public static final String ARG_USERNAME = "studentNumber";
+    public static final int GET_STUDENT_NUMBER_REQUEST = 1;
+    public static final String ARG_STUDENT_NUMBER = "studentNumber";
     public static final String ARG_POSITION = "position";
 
     private static final String TAG = "MainActivity";
@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
         if (searchView != null) {
             searchView.setOnQueryTextListener(this);
         }
-
-
         return true;
     }
 
@@ -88,14 +86,14 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     @Override
     public void onStudentSelected(int position) {
         Student selectedStudent = mAdapter.getFilteredStudents().get(position);
-        onStudentSelected(selectedStudent.getUsername());
+        onStudentSelected(selectedStudent.getStudentNumber());
     }
 
     @Override
-    public void onStudentSelected(String username) {
+    public void onStudentSelected(String studentNumber) {
         StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_USERNAME, username);
+        args.putString(ARG_STUDENT_NUMBER, studentNumber);
         studentInfoFragment.setArguments(args);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
         transaction.addToBackStack(null);
         transaction.commit();
 
-        Log.d(TAG, "Couldn't find student with username " + username);
+        Log.d(TAG, "Couldn't find student with studentNumber " + studentNumber);
     }
 
     /*
@@ -115,18 +113,18 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     public void onClick(View v) {
         if(v.getId()==R.id.card_reader_launcher_button) {
             Intent intent = new Intent(this, MagStripeReaderActivity.class);
-            startActivityForResult(intent, GET_UTORID_REQUEST);
+            startActivityForResult(intent, GET_STUDENT_NUMBER_REQUEST);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == GET_UTORID_REQUEST) {
+        if (requestCode == GET_STUDENT_NUMBER_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                String username = data.getStringExtra(ARG_USERNAME);
-                onStudentSelected(username);
+                String studentNumber = data.getStringExtra(ARG_STUDENT_NUMBER);
+                onStudentSelected(studentNumber);
             }
         }
     }

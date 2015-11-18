@@ -17,6 +17,10 @@ public class Student implements Serializable {
     private int __v;
 
 
+    public String getPointsInfo() {
+        return "XP: " + experiencePoints + " TP: " + teachingPoints + " CP: " + challengePoints;
+    }
+
     public String getDisplayName() {
         return displayName;
     }

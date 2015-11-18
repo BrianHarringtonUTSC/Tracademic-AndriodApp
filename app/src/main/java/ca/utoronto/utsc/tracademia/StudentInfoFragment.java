@@ -19,7 +19,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
     protected PointType pointType;
     protected NumberPicker typePicker, pointsPicker;
-    protected TextView studentInfoTextView;
+    protected TextView studentInfoTextView, studentPointInfoTextView;
     private StudentsAdapter mAdapter;
     private Student student;
 
@@ -38,11 +38,14 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        String username = getArguments().getString(MainActivity.ARG_USERNAME);
-        student = mAdapter.getStudentByUsername(username);
+        String studentNumber = getArguments().getString(MainActivity.ARG_STUDENT_NUMBER);
+        student = mAdapter.getStudentByStudentNumber(studentNumber);
 
         studentInfoTextView = (TextView) getActivity().findViewById(R.id.student_info_textview);
         studentInfoTextView.setText(student.getDisplayName());
+
+        studentPointInfoTextView = (TextView) getActivity().findViewById(R.id.student_points_info);
+        studentPointInfoTextView.setText(student.getPointsInfo());
 
         typePicker = (NumberPicker)getActivity().findViewById(R.id.point_type_picker);
         StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
@@ -57,6 +60,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);
         pointsPicker.setMaxValue(3);
+        pointsPicker.setDisplayedValues(new String[]{"0","1","2","3"});
 
         getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
 
@@ -83,6 +87,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
                 GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
                 requestTask.execute(MainActivity.BASE_URL + "api/users/" + student.get_id() + "/give");
+
+
             }
         }
     }
