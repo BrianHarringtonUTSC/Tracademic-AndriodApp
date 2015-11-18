@@ -38,7 +38,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via username/password.
  */
 public class LoginActivity extends Activity {
 
@@ -51,7 +51,7 @@ public class LoginActivity extends Activity {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -62,8 +62,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-//        populateAutoComplete();
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -77,8 +76,8 @@ public class LoginActivity extends Activity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
+        mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -91,7 +90,7 @@ public class LoginActivity extends Activity {
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (invalid username, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
@@ -100,11 +99,11 @@ public class LoginActivity extends Activity {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -117,14 +116,14 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        // Check for a valid username address.
+        if (TextUtils.isEmpty(username)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isUsernameValid(username)) {
+            mUsernameView.setError(getString(R.string.error_invalid_username));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -140,15 +139,15 @@ public class LoginActivity extends Activity {
             Map<String, String> requestParams = new HashMap<>();
             requestParams.put("login", "true");
             requestParams.put("remember", "0");
-            requestParams.put("password", email);
+            requestParams.put("password", username);
             requestParams.put("username", password);
             mAuthTask = new UserLoginTask(requestParams);
             mAuthTask.execute(MainActivity.BASE_URL + "api/User");
         }
     }
 
-    private boolean isEmailValid(String email) {
-        return email.length() > 0;
+    private boolean isUsernameValid(String username) {
+        return username.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
