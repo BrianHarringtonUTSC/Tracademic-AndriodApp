@@ -38,8 +38,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        int position = getArguments().getInt(MainActivity.ARG_POSITION);
-        student = mAdapter.getStudents().get(position);
+        String studentNumber = getArguments().getString(MainActivity.ARG_STUDENT_NUMBER);
+        student = mAdapter.getStudentByStudentNumber(studentNumber);
 
         studentInfoTextView = (TextView) getActivity().findViewById(R.id.student_info_textview);
         studentInfoTextView.setText(student.getDisplayName());

@@ -1,32 +1,35 @@
 package ca.utoronto.utsc.tracademia;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Provide views to RecyclerView with data from mDataSet.
+ * Provide views to RecyclerView with data from mStudents.
  */
-public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHolder> implements Serializable {
+public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHolder> implements Filterable {
     private static final String TAG = "StudentsAdapter";
 
-    private List<Student> mDataSet;
+    private List<Student> mStudents;
+    private List<Student> mFilteredStudents;
     private OnStudentSelectedListener mCallback;
 
     /**
      * Initialize the dataset of the Adapter.
      *
-     * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
+     * @param students String[] containing the data to populate views to be used by RecyclerView.
      */
-    public StudentsAdapter(List<Student> dataSet, OnStudentSelectedListener callback) {
-        mDataSet = dataSet;
+    public StudentsAdapter(List<Student> students, OnStudentSelectedListener callback) {
+        mStudents = students;
+        mFilteredStudents = new ArrayList<>(mStudents);
         mCallback = callback;
     }
 
@@ -45,7 +48,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        Student student = mDataSet.get(position);
+        Student student = mFilteredStudents.get(position);
         viewHolder.mainText.setText(student.getDisplayName());
         viewHolder.subText.setText("XP: " + student.getExperiencePoints() + "    CP: " + student.getChallengePoints() + "    RP: " + student.getTeachingPoints());
     }
@@ -53,35 +56,38 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return mFilteredStudents.size();
     }
 
-    public void addItemsToList(Student... studentPoints) {
-        mDataSet.addAll(Arrays.asList(studentPoints));
+    public void addItemsToList(Student... students) {
+        mStudents.clear();
+        mStudents.addAll(Arrays.asList(students));
+        mFilteredStudents = new ArrayList<>(mStudents);
         notifyDataSetChanged();
     }
 
     public List<Student> getStudents() {
-        return mDataSet;
+        return mStudents;
     }
-    //TODO: optimze this
-    public Student getStudentByLibraryNumber(String libraryNumber) {
-        for (Student student : mDataSet) {
-            if (student.getLibaryNumber().equals(libraryNumber)){
-                return student;
-            }
-        }
-        return null;
+
+    public List<Student> getFilteredStudents() {
+        return mFilteredStudents;
     }
+
     public Student getStudentByStudentNumber(String studentNumber) {
         if (studentNumber != null) {
-            for (Student student : mDataSet) {
+            for (Student student : mStudents) {
                 if (studentNumber.equals(student.getStudentNumber())) {
                     return student;
                 }
             }
         }
         return null;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new StudentsFilter();
     }
 
     /**
@@ -105,7 +111,30 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
                     mCallback.onStudentSelected(getAdapterPosition());
                 }
             });
+        }
+    }
 
+    class StudentsFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            mFilteredStudents.clear();
+
+            if (constraint.length() == 0) {
+                mFilteredStudents.addAll(mStudents);
+            } else {
+                for (Student student : mStudents) {
+                    if (student.getDisplayName().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        mFilteredStudents.add(student);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            notifyDataSetChanged();
         }
     }
 }

@@ -69,7 +69,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         @Override
         protected void onPostExecute(String result) {
             Student[] studentArray = new Gson().fromJson(result, Student[].class);
-            mAdapter.getStudents().clear();
             mAdapter.addItemsToList(studentArray);
             mSwipeLayout.setRefreshing(false);
         }

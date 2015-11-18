@@ -4,8 +4,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,12 +15,11 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, SearchView.OnQueryTextListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -57,7 +58,16 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_points, menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(this);
+        }
+
+
         return true;
     }
 
@@ -66,14 +76,8 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.action_search || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -83,26 +87,21 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
 
     @Override
     public void onStudentSelected(int position) {
+        Student selectedStudent = mAdapter.getFilteredStudents().get(position);
+        onStudentSelected(selectedStudent.getStudentNumber());
+    }
+
+    @Override
+    public void onStudentSelected(String studentNumber) {
         StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_POSITION, position);
+        args.putString(ARG_STUDENT_NUMBER, studentNumber);
         studentInfoFragment.setArguments(args);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, studentInfoFragment);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    @Override
-    public void onStudentSelected(String studentNumber) {
-        List<Student> students = mAdapter.getStudents();
-        for (int i = 0; i < students.size(); i++) {
-            if (students.get(i).getStudentNumber().equals(studentNumber)) {
-                onStudentSelected(i);
-                return;
-            }
-        }
 
         Log.d(TAG, "Couldn't find student with number " + studentNumber);
     }
@@ -156,5 +155,19 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     public boolean  onSupportNavigateUp() {
         fragmentManager.popBackStack();
         return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, query);
+        mAdapter.getFilter().filter(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        Log.d(TAG, query);
+        mAdapter.getFilter().filter(query);
+        return false;
     }
 }
