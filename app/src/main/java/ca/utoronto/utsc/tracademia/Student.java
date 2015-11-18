@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Student implements Serializable {
 
     private String _id;
+    private String username;
     private String displayNameCanonical;
     private String displayName;
     private String profileText;
@@ -93,5 +94,13 @@ public class Student implements Serializable {
 
     public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

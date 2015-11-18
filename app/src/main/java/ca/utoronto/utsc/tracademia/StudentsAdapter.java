@@ -49,7 +49,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         Student student = mFilteredStudents.get(position);
-        viewHolder.mainText.setText(student.getDisplayName());
+        viewHolder.mainText.setText(student.getUsername());
         viewHolder.subText.setText("XP: " + student.getExperiencePoints() + "    CP: " + student.getChallengePoints() + "    RP: " + student.getTeachingPoints());
     }
 
@@ -74,10 +74,10 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         return mFilteredStudents;
     }
 
-    public Student getStudentByStudentNumber(String studentNumber) {
-        if (studentNumber != null) {
+    public Student getStudentByUsername(String username) {
+        if (username != null) {
             for (Student student : mStudents) {
-                if (studentNumber.equals(student.getStudentNumber())) {
+                if (username.equals(student.getUsername())) {
                     return student;
                 }
             }

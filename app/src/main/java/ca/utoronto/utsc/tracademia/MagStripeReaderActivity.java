@@ -119,6 +119,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Matcher m = r.matcher(strData);
         String name = "";
         String studentNumber = "";
+        // TODO: MARKUS, CHANGE THIS TO RETURN USERNAME NOT STUDENT NUMBER
         if(m.find()) {
             String[] cardValues = strData.split(";")[0].split("\\^");
             for(String cardValue : cardValues) {
@@ -128,10 +129,10 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
                 }
             }
             Intent resultIntent = new Intent();
-            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
+            resultIntent.putExtra(MainActivity.ARG_USERNAME, studentNumber);
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
-//            Student student = mAdapter.getStudentByStudentNumber(studentNumber);
+//            Student student = mAdapter.getStudentByUsername(studentNumber);
 //            if (student != null){
 //                _id = student.get_id();
 //                displayName = student.getDisplayName();
