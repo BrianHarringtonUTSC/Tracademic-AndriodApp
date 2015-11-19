@@ -20,8 +20,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import IDTech.MSR.XMLManager.StructConfigParameters;
 import IDTech.MSR.uniMag.uniMagReader;
@@ -146,34 +144,26 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgCardData(byte arg0, byte[] arg1) {
         Log.d(TAG, "onReceiveMsgCardData");
-        Log.d(TAG, "Successful swipe!");
 
-        String strData = new String(arg1);
+
+        String data = new String(arg1);
+        Log.d(TAG, "Successful swipe: " + data);
+
         if(uniMagReader.isSwipeCardRunning()) {
             uniMagReader.stopSwipeCard();
         }
 
         // Match library card data. %FirstName^LastName^StudentNumber^DateOfCardRelease;LibraryNumber?
-        String pattern = "\\%[a-zA-Z^]+(\\d)+\\^\\d{2}\\/\\d{2}\\/\\d{4}\\?\\;\\d+\\?";
-        Log.d(TAG, "Card data: " + strData);
-        Pattern r = Pattern.compile(pattern);
-        Matcher m = r.matcher(strData);
-        String name = "";
-        String studentNumber = "";
-        if(m.find()) {
-            String[] cardValues = strData.split(";")[0].split("\\^");
-            for(String cardValue : cardValues) {
-                if (cardValue.matches("^?\\d+$") ){
-                    studentNumber = cardValue;
-                    break;
-                }
-            }
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
-            setResult(Activity.RESULT_OK, resultIntent);
-            finish();
-        } else {
-            Snackbar.make(findViewById(android.R.id.content), "Invalid card data", Snackbar.LENGTH_LONG)
+        String[] dataSplit = data.split("\\^");
+
+       if (dataSplit.length == 4 &&  dataSplit[2].matches("[0-9]{9,10}")) {
+           String studentNumber = dataSplit[2];
+           Intent resultIntent = new Intent();
+           resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
+           setResult(Activity.RESULT_OK, resultIntent);
+           finish();
+       } else {
+            Snackbar.make(findViewById(android.R.id.content), "Invalid card data: " + data, Snackbar.LENGTH_LONG)
                     .show();
             uniMagReader.startSwipeCard();
         }
