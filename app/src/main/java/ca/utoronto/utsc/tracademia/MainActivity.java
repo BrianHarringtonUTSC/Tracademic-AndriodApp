@@ -110,7 +110,9 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
     @Override
     public void onStudentInfoSubmitted() {
-
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
     }
 
     /*

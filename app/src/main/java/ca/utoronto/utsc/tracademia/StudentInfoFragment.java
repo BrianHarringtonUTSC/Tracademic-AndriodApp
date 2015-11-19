@@ -21,7 +21,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     protected NumberPicker typePicker, pointsPicker;
     protected TextView studentInfoTextView, studentPointInfoTextView;
     private StudentsAdapter mAdapter;
-    private Student student;
+    private Student mStudent;
+    private StudentListener mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,7 +30,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         View rootView = inflater.inflate(R.layout.student_info, container, false);
         rootView.setTag(TAG);
 
-        mAdapter = ((StudentListener) getActivity()).getStudentsAdapter();
+        mCallback = (StudentListener) getActivity();
+        mAdapter = mCallback.getStudentsAdapter();
 
 
         return rootView;
@@ -39,13 +41,13 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         String studentNumber = getArguments().getString(MainActivity.ARG_STUDENT_NUMBER);
-        student = mAdapter.getStudentByStudentNumber(studentNumber);
+        mStudent = mAdapter.getStudentByStudentNumber(studentNumber);
 
         studentInfoTextView = (TextView) getActivity().findViewById(R.id.student_info_textview);
-        studentInfoTextView.setText(student.getDisplayName());
+        studentInfoTextView.setText(mStudent.getDisplayName());
 
         studentPointInfoTextView = (TextView) getActivity().findViewById(R.id.student_points_info);
-        studentPointInfoTextView.setText(student.getPointsInfo());
+        studentPointInfoTextView.setText(mStudent.getPointsInfo());
 
         typePicker = (NumberPicker)getActivity().findViewById(R.id.point_type_picker);
         StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
@@ -60,7 +62,6 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);
         pointsPicker.setMaxValue(3);
-        pointsPicker.setDisplayedValues(new String[]{"0", "1", "2", "3"});
 
         getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
 
@@ -86,9 +87,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
                 params.put("amount", String.valueOf(num_points));
 
                 GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
-                requestTask.execute(MainActivity.BASE_URL + "api/users/" + student.get_id() + "/give");
-
-
+                requestTask.execute(MainActivity.BASE_URL + "api/users/" + mStudent.get_id() + "/give");
             }
         }
     }
@@ -99,7 +98,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         Challenge
     }
 
-    class GivePointsRequestTask extends AsyncTask<String, String, String> {
+    class GivePointsRequestTask extends AsyncTask<String, String, Integer> {
         private final Map<String, String> requestParams;
 
         public GivePointsRequestTask(Map<String, String> params) {
@@ -107,24 +106,31 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Integer doInBackground(String... params) {
             try {
-                HTTPClient.postWebpage(params[0], requestParams);
-                return "";
+                return HTTPClient.postWebpage(params[0], requestParams);
+
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
-                return e.getMessage();
+                return -1;
             }
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            String message = "Success";
-            if (result.length() > 0) {
-                message = "Failed: " + result;
+        protected void onPostExecute(Integer responseStatus) {
+
+            String message;
+
+            if (responseStatus == 200) {
+                String type = requestParams.get("type").replace("Points", " points");
+                message = mStudent.getUsername() + " awarded " + requestParams.get("amount") + " " + type;
+            } else {
+                message = "Failed to award points. Response status: "  + responseStatus;
             }
+
             Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
                     .show();
+            mCallback.onStudentInfoSubmitted();
         }
     }
 }

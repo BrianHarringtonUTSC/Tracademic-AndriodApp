@@ -145,7 +145,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     public void onReceiveMsgCardData(byte arg0, byte[] arg1) {
         Log.d(TAG, "onReceiveMsgCardData");
 
-
         String data = new String(arg1);
         Log.d(TAG, "Successful swipe: " + data);
 
@@ -155,14 +154,13 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
 
         // Match library card data. %FirstName^LastName^StudentNumber^DateOfCardRelease;LibraryNumber?
         String[] dataSplit = data.split("\\^");
-
-       if (dataSplit.length == 4 &&  dataSplit[2].matches("[0-9]{9,10}")) {
+        if (dataSplit.length == 4 &&  dataSplit[2].matches("[0-9]{9,10}")) {
            String studentNumber = dataSplit[2];
            Intent resultIntent = new Intent();
            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
            setResult(Activity.RESULT_OK, resultIntent);
            finish();
-       } else {
+        } else {
             Snackbar.make(findViewById(android.R.id.content), "Invalid card data: " + data, Snackbar.LENGTH_LONG)
                     .show();
             uniMagReader.startSwipeCard();
