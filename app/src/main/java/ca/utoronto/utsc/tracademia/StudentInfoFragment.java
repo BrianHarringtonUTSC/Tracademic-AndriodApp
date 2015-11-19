@@ -33,7 +33,6 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         mCallback = (StudentListener) getActivity();
         mAdapter = mCallback.getStudentsAdapter();
 
-
         return rootView;
     }
 
