@@ -29,7 +29,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         View rootView = inflater.inflate(R.layout.student_info, container, false);
         rootView.setTag(TAG);
 
-        mAdapter = ((OnStudentSelectedListener) getActivity()).getStudentsAdapter();
+        mAdapter = ((StudentListener) getActivity()).getStudentsAdapter();
 
 
         return rootView;
@@ -60,7 +60,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);
         pointsPicker.setMaxValue(3);
-        pointsPicker.setDisplayedValues(new String[]{"0","1","2","3"});
+        pointsPicker.setDisplayedValues(new String[]{"0", "1", "2", "3"});
 
         getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
 

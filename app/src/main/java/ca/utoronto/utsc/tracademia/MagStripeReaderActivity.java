@@ -1,27 +1,25 @@
 package ca.utoronto.utsc.tracademia;
 
-import android.annotation.TargetApi;
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import com.idtechproducts.acom.Common;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,44 +30,99 @@ import IDTech.MSR.uniMag.uniMagReaderMsg;
 
 public class MagStripeReaderActivity extends AppCompatActivity implements uniMagReaderMsg {
     private static final String TAG = "MagStripeReaderActivity";
+    private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    private uniMagReader myUniMagReader;
-    private LoadXMLConfigurationTask loadXMLConfigurationTask;
-    private EditText sdntUserName;
-    protected StudentsAdapter mAdapter;
+    private uniMagReader uniMagReader;
     private TextView readerStatus;
+    private AudioManager mAudioManager;
+    private int originalVolume;
 
-    StudentInfoFragment.PointType pointType;
-    NumberPicker typePicker, pointsPicker;
-    Student student;
-    String displayName, _id;
-    int num_points;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mag_stripe_reader);
-        if(myUniMagReader == null) {
-            myUniMagReader = new uniMagReader(this,this);
-            myUniMagReader.setSaveLogEnable(false);
-            loadXMLConfigurationTask = new LoadXMLConfigurationTask();
+        readerStatus = (TextView) findViewById(R.id.reader_status_text_view);
+        getPermissions();
+    }
+
+    private void init() {
+        setReaderStatusNotReady();
+
+        if(uniMagReader == null) {
+            uniMagReader = new uniMagReader(this,this);
+            uniMagReader.setSaveLogEnable(false);
+            LoadXMLConfigurationTask loadXMLConfigurationTask = new LoadXMLConfigurationTask();
             loadXMLConfigurationTask.execute();
         }
 
-        readerStatus = (TextView) (TextView) findViewById(R.id.reader_status_text_view);
-        setReaderUnconnected();
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
-    private void setReaderUnconnected(){
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this,  permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void getPermissions() {
+        // only need to check for permissions on SDK 23 and above
+        if (Build.VERSION.SDK_INT > 22) {
+            List<String> permissionsToRequest = new ArrayList<>();
+            for (String permission : REQUIRED_PERMISSIONS) {
+                if (!hasPermission(permission)) {
+                    permissionsToRequest.add(permission);
+                }
+            }
+            if (permissionsToRequest.size() == 0) {
+                init();
+            } else {
+                readerStatus.setText("Waiting for Permissions");
+                ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), 0);
+            }
+        } else {
+            init();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        // If request is cancelled, the result arrays are empty.
+        boolean allRequiredPermissionsGranted = true;
+        if (grantResults.length == permissions.length) {
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allRequiredPermissionsGranted = false;
+                }
+            }
+        } else {
+            allRequiredPermissionsGranted = false;
+        }
+
+        if (allRequiredPermissionsGranted) {
+            init();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Did not get required permissions to scan cards", Snackbar.LENGTH_LONG)
+                    .show();
+        }
+
+    }
+
+    private void setReaderStatusNotReady(){
         readerStatus.setText("Reader not ready");
         readerStatus.setTextColor(Color.RED);
     }
 
     @Override
     public void onDestroy() {
-        myUniMagReader.stopSwipeCard();
-        myUniMagReader.unregisterListen();
-        myUniMagReader.release();
+        if (uniMagReader != null) {
+            uniMagReader.stopSwipeCard();
+            uniMagReader.unregisterListen();
+            uniMagReader.release();
+        }
+        if (mAudioManager != null) {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+        }
+
         super.onDestroy();
     }
 
@@ -96,8 +149,8 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Log.d(TAG, "Successful swipe!");
 
         String strData = new String(arg1);
-        if(myUniMagReader.isSwipeCardRunning()) {
-            myUniMagReader.stopSwipeCard();
+        if(uniMagReader.isSwipeCardRunning()) {
+            uniMagReader.stopSwipeCard();
         }
 
         // Match library card data. %FirstName^LastName^StudentNumber^DateOfCardRelease;LibraryNumber?
@@ -118,15 +171,11 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
             Intent resultIntent = new Intent();
             resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
             setResult(Activity.RESULT_OK, resultIntent);
-            if(myUniMagReader.isSwipeCardRunning()) {
-                myUniMagReader.stopSwipeCard();
-            }
-            myUniMagReader.release();
             finish();
         } else {
             Snackbar.make(findViewById(android.R.id.content), "Invalid card data", Snackbar.LENGTH_LONG)
                     .show();
-            myUniMagReader.startSwipeCard();
+            uniMagReader.startSwipeCard();
         }
     }
 
@@ -149,22 +198,20 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgConnected() {
         Log.d(TAG, "onReceiveMsgConnected");
-
-        readerStatus.setText("Ready to Scan card");
         readerStatus.setTextColor(Color.parseColor("#339933"));
-        myUniMagReader.startSwipeCard();
+        uniMagReader.startSwipeCard();
+        readerStatus.setText("Ready to Scan card");
     }
 
     @Override
     public void onReceiveMsgDisconnected() {
         Log.d(TAG, "onReceiveMsgDisconnected");
-        if(myUniMagReader.isSwipeCardRunning()) {
-            myUniMagReader.stopSwipeCard();
+        if(uniMagReader.isSwipeCardRunning()) {
+            uniMagReader.stopSwipeCard();
         }
-        setReaderUnconnected();
-        myUniMagReader.release();
-        setResult(Activity.RESULT_CANCELED);
-        finish();
+        setReaderStatusNotReady();
+        Snackbar.make(findViewById(android.R.id.content), "Reader Disconnected", Snackbar.LENGTH_LONG)
+                .show();
     }
 
     @Override
@@ -180,13 +227,13 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgTimeout(String arg0) {
         Log.d(TAG, "onReceiveMsgTimeout -- " + arg0);
-        Log.d(TAG,"Timed out!");
-        myUniMagReader.startSwipeCard();
+        Log.d(TAG, "Timed out!");
+        uniMagReader.startSwipeCard();
     }
 
     @Override
     public void onReceiveMsgToConnect() {
-        Log.d(TAG, "Swiper Powered Up");
+        Log.d(TAG, "Reader Powered Up");
     }
 
     @Override
@@ -199,52 +246,13 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Log.d(TAG, "onReceiveMsgAutoConfigCompleted");
     }
 
-
-
-    String fromStream(InputStream in) throws IOException
-    {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder out = new StringBuilder();
-        String newLine = System.getProperty("line.separator");
-        String line;
-        while ((line = reader.readLine()) != null) {
-            out.append(line);
-            out.append(newLine);
-        }
-        return out.toString();
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void writeToFile(String data) throws IOException {
-        File file = new File(Common.getApplicationPath(getApplicationContext()), "IDT_uniMagCfg.xml");
-        Log.d(TAG, "writing to" + file.getPath());
-
-        try(FileOutputStream stream = new FileOutputStream(file)) {
-            stream.write(data.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public class LoadXMLConfigurationTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-
             Log.d(TAG, "Attempting to load xml config");
-
-            Log.d(TAG, Common.getSDRootFilePath());
-            InputStream is = getResources().openRawResource(R.raw.idt_unimagcfg);
-            try {
-                String res = fromStream(is);
-                writeToFile(res);
-
-            } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            myUniMagReader.setXMLFileNameWithPath(Common.getApplicationPath(getApplicationContext()) + File.separator + "IDT_uniMagCfg.xml");
-            myUniMagReader.loadingConfigurationXMLFile(true);
+            uniMagReader.setXMLFileNameWithPath("android.resource://" + getPackageName() + "/" + R.raw.idt_unimagcfg);
+            uniMagReader.loadingConfigurationXMLFile(true);
 
             return true;
         }
@@ -252,9 +260,9 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         @Override
         protected void onPostExecute(final Boolean success) {
             Log.d(TAG, "Loaded xml config");
-            if (myUniMagReader != null) {
-                Log.d(TAG, "myUniMagReader isn't null!");
-                myUniMagReader.registerListen();
+            if (uniMagReader != null) {
+                Log.d(TAG, "uniMagReader ready to listen");
+                uniMagReader.registerListen();
             }
 
         }

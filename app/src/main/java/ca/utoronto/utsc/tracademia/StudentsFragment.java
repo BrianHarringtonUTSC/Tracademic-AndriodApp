@@ -28,7 +28,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         View rootView = inflater.inflate(R.layout.recycler_view, container, false);
         rootView.setTag(TAG);
 
-        mAdapter = ((OnStudentSelectedListener) getActivity()).getStudentsAdapter();
+        mAdapter = ((StudentListener) getActivity()).getStudentsAdapter();
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
@@ -69,7 +69,9 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         @Override
         protected void onPostExecute(String result) {
             Student[] studentArray = new Gson().fromJson(result, Student[].class);
-            mAdapter.addItemsToList(studentArray);
+            if (mAdapter != null) {
+                mAdapter.addItemsToList(studentArray);
+            }
             mSwipeLayout.setRefreshing(false);
         }
     }

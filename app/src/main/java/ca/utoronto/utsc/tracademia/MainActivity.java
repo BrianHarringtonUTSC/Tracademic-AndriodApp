@@ -3,13 +3,12 @@ package ca.utoronto.utsc.tracademia;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements OnStudentSelectedListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, SearchView.OnQueryTextListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -94,19 +93,24 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
     @Override
     public void onStudentSelected(String studentNumber) {
         if (mAdapter.getStudentByStudentNumber(studentNumber) != null) {
-        StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_STUDENT_NUMBER, studentNumber);
-        studentInfoFragment.setArguments(args);
+            StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
+            Bundle args = new Bundle();
+            args.putString(ARG_STUDENT_NUMBER, studentNumber);
+            studentInfoFragment.setArguments(args);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, studentInfoFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, studentInfoFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "No Sudent Number supplied", Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), "Student Number not given or found", Snackbar.LENGTH_LONG)
                     .show();
         }
+    }
+
+    @Override
+    public void onStudentInfoSubmitted() {
+
     }
 
     /*
@@ -130,9 +134,6 @@ public class MainActivity extends AppCompatActivity implements OnStudentSelected
             if (resultCode == RESULT_OK) {
                 String studentNumber = data.getStringExtra(ARG_STUDENT_NUMBER);
                 onStudentSelected(studentNumber);
-            } else if (resultCode == RESULT_CANCELED){
-                Snackbar.make(findViewById(android.R.id.content), "Reader disconnected", Snackbar.LENGTH_LONG)
-                        .show();
             }
         }
     }

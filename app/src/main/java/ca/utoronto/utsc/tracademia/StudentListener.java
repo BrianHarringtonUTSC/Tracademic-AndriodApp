@@ -1,8 +1,9 @@
 package ca.utoronto.utsc.tracademia;
 
 
-public interface OnStudentSelectedListener {
+public interface StudentListener {
     StudentsAdapter getStudentsAdapter();
     void onStudentSelected(int position);
     void onStudentSelected(String studentNumber);
+    void onStudentInfoSubmitted();
 }
