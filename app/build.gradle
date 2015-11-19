@@ -26,4 +26,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.android.gms:play-services:7.8.0'
     compile files('lib/UniMag_SDK_v5.0.jar')
+    compile 'com.android.support:design:23.1.0'
 }

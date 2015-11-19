@@ -3,13 +3,13 @@ package ca.utoronto.utsc.tracademia;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -119,11 +119,12 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
         @Override
         protected void onPostExecute(String result) {
-            String toastMessage = "Success";
+            String message = "Success";
             if (result.length() > 0) {
-                toastMessage = "Failed: " + result;
+                message = "Failed: " + result;
             }
-            Toast.makeText(getActivity().getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 }

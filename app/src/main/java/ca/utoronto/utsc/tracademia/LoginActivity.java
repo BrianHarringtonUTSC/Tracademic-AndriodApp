@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,7 +21,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
@@ -306,7 +306,8 @@ public class LoginActivity extends Activity {
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
                     mPasswordView.requestFocus();
                 }
-                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), errorMsg, Snackbar.LENGTH_LONG)
+                        .show();
             }
         }
 

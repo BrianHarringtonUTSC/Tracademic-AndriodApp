@@ -3,14 +3,16 @@ package ca.utoronto.utsc.tracademia;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.idtechproducts.acom.Common;
 
@@ -35,6 +37,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     private LoadXMLConfigurationTask loadXMLConfigurationTask;
     private EditText sdntUserName;
     protected StudentsAdapter mAdapter;
+    private TextView readerStatus;
 
     StudentInfoFragment.PointType pointType;
     NumberPicker typePicker, pointsPicker;
@@ -53,28 +56,13 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
             loadXMLConfigurationTask.execute();
         }
 
-//        //getStudent data
-//        Intent intent = getIntent();
-//        mAdapter = (StudentsAdapter) intent.getSerializableExtra("StudentsAdapter");
-//
-//        //Set Activity data
-//        typePicker = (NumberPicker)findViewById(R.id.pointTypePicker);
-//        StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
-//        String[] types = new String[pt.length];
-//        for (int i = 0; i < pt.length; i++) {
-//            types[i] = pt[i].name();
-//        }
-//        typePicker.setMinValue(0);
-//        typePicker.setMaxValue(pt.length - 1);
-//        typePicker.setDisplayedValues(types);
-//
-//        pointsPicker = (NumberPicker)findViewById(R.id.pointsPicker);
-//        pointsPicker.setMinValue(1);
-//        pointsPicker.setMaxValue(5);
-//
-//        sdntUserName = (EditText)findViewById(R.id.pointsStudentName);
-//
-//        findViewById(R.id.give_point).setOnClickListener(this);
+        readerStatus = (TextView) (TextView) findViewById(R.id.reader_status_text_view);
+        setReaderUnconnected();
+    }
+
+    private void setReaderUnconnected(){
+        readerStatus.setText("Reader not ready");
+        readerStatus.setTextColor(Color.RED);
     }
 
     @Override
@@ -119,7 +107,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Matcher m = r.matcher(strData);
         String name = "";
         String studentNumber = "";
-        // TODO: MARKUS, CHANGE THIS TO RETURN USERNAME NOT STUDENT NUMBER
         if(m.find()) {
             String[] cardValues = strData.split(";")[0].split("\\^");
             for(String cardValue : cardValues) {
@@ -131,11 +118,14 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
             Intent resultIntent = new Intent();
             resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
             setResult(Activity.RESULT_OK, resultIntent);
-            myUniMagReader.disconnect();
+            if(myUniMagReader.isSwipeCardRunning()) {
+                myUniMagReader.stopSwipeCard();
+            }
+            myUniMagReader.release();
             finish();
         } else {
-            Toast toast = Toast.makeText(getApplicationContext(), "Invalid card data.",  Toast.LENGTH_SHORT);
-            toast.show();
+            Snackbar.make(findViewById(android.R.id.content), "Invalid card data", Snackbar.LENGTH_LONG)
+                    .show();
             myUniMagReader.startSwipeCard();
         }
     }
@@ -151,15 +141,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Log.d(TAG, "onReceiveMsgToCalibrateReader");
     }
 
-//    final Handler swipeHandler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            String text = (String)msg.obj;
-//            TextView dataView = (TextView) findViewById(R.id.text_view);
-//            dataView.setText(text);
-//        }
-//    };
-
     @Override
     public void onReceiveMsgCommandResult(int arg0, byte[] arg1) {
         Log.d(TAG, "onReceiveMsgCommandResult");
@@ -168,10 +149,9 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgConnected() {
         Log.d(TAG, "onReceiveMsgConnected");
-        Log.d(TAG, "Card reader is connected.");
-        Toast toast = Toast.makeText(getApplicationContext(), "Ready to Scan card.",  Toast.LENGTH_SHORT);
-        toast.show();
 
+        readerStatus.setText("Ready to Scan card");
+        readerStatus.setTextColor(Color.parseColor("#339933"));
         myUniMagReader.startSwipeCard();
     }
 
@@ -181,8 +161,10 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         if(myUniMagReader.isSwipeCardRunning()) {
             myUniMagReader.stopSwipeCard();
         }
+        setReaderUnconnected();
         myUniMagReader.release();
-
+        setResult(Activity.RESULT_CANCELED);
+        finish();
     }
 
     @Override
@@ -243,72 +225,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
             e.printStackTrace();
         }
     }
-//
-//    @Override
-//    public void onClick(View v) {
-//        if(v.getId()==R.id.give_point){
-//            pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
-//            num_points = pointsPicker.getValue();
-//
-//            new AlertDialog.Builder(this)
-//                    .setIcon(android.R.drawable.ic_dialog_info)
-//                    .setTitle(R.string.confirm_title)
-//                    .setMessage("Awarding "+ displayName +" "+ num_points + " " + pointType + (num_points == 1 ? " point" : " points"))
-//                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            try {
-//                                awardPoints(_id, pointType, num_points);
-//                            } catch (IOException e) {
-//                                Log.d(TAG, "An error occured, See Stack Trace for more errors.");
-//                                e.printStackTrace();
-//                            }
-//                            MagStripeReaderActivity.this.finish();
-//                        }
-//                    }).setNegativeButton(R.string.cancel, null)
-//                    .show();
-//        }
-//    }
-
-//    @TargetApi(Build.VERSION_CODES.KITKAT)
-//    //TODO:: Join POST REQUEST CODE
-//    private void awardPoints(String id, StudentInfoFragment.PointType pointType, int num_points) throws IOException {
-//
-//        List<AbstractMap.SimpleEntry<String, String>> urlParams = new ArrayList<>();
-//        urlParams.add(new AbstractMap.SimpleEntry<>("amount", Integer.toString(num_points)));
-//        urlParams.add(new AbstractMap.SimpleEntry<>("type", pointType.toString()));
-//
-//        URL url = new URL(MainActivity.BASE_URL + "api/users/" + id + "/give?" + getQuery(urlParams));
-//
-//        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//        urlConnection.setRequestMethod("POST");
-//        if (LoginActivity.mCookieManager.getCookieStore().getCookies().size() > 0) {
-//            urlConnection.setRequestProperty("Cookie", TextUtils.join(";", LoginActivity.mCookieManager.getCookieStore().getCookies()));
-//        }
-//
-//        urlConnection.connect();
-//    }
-
-
-
-//    //TODO:: Join this and LoginActivity into one class.
-//    private String getQuery(List<AbstractMap.SimpleEntry<String, String>> params) throws UnsupportedEncodingException {
-//        StringBuilder result = new StringBuilder();
-//        boolean first = true;
-//
-//        for (AbstractMap.SimpleEntry<String, String> pair : params) {
-//            if (first)
-//                first = false;
-//            else
-//                result.append("&");
-//
-//            result.append(URLEncoder.encode(pair.getKey(), "UTF-8"));
-//            result.append("=");
-//            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-//        }
-//
-//        return result.toString();
-//    }
 
     public class LoadXMLConfigurationTask extends AsyncTask<Void, Void, Boolean> {
 
