@@ -61,7 +61,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
         pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);
-        pointsPicker.setMaxValue(3);
+        pointsPicker.setMaxValue(5);
+        pointsPicker.setWrapSelectorWheel(false);
 
         getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
 
