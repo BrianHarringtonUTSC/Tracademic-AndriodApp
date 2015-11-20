@@ -5,12 +5,8 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -19,7 +15,7 @@ import java.util.ArrayList;
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -29,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
     protected StudentsAdapter mAdapter;
     protected FragmentManager fragmentManager;
-    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,26 +51,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-        this.menu = menu;
-
-        final MenuItem item = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-
-        if (searchView != null) {
-            searchView.setOnQueryTextListener(this);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() == R.id.action_search || super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public StudentsAdapter getStudentsAdapter() {
         return mAdapter;
     }
@@ -86,16 +61,9 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
         onStudentSelected(selectedStudent.getStudentNumber());
     }
 
-    public void closeSearchBar() {
-         menu.findItem(R.id.action_search).collapseActionView();
-    }
-
     @Override
     public void onStudentSelected(String studentNumber) {
         if (mAdapter.getStudentByStudentNumber(studentNumber) != null) {
-            // close search bar if open
-            closeSearchBar();
-
             StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
             Bundle args = new Bundle();
             args.putString(ARG_STUDENT_NUMBER, studentNumber);
@@ -118,11 +86,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
         }
     }
 
-    /*
-    Responsible for dealing with any view that is clicked.
-    Currently supports: Opening the Barcode scanning app. If an app doesn't exit, the user
-        will be prompted to download one.
-    */
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.card_reader_launcher_button) {
@@ -164,17 +127,5 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     public boolean  onSupportNavigateUp() {
         fragmentManager.popBackStack();
         return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        mAdapter.getFilter().filter(query);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String query) {
-        mAdapter.getFilter().filter(query);
-        return false;
     }
 }

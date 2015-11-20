@@ -88,8 +88,8 @@ public class HTTPClient {
         // remove final &
         return result.substring(0, result.length() - 1);
     }
-    public static void writeOutputStream(HttpURLConnection urlConnection, String requestBody) {
 
+    public static int writeOutputStream(HttpURLConnection urlConnection, String requestBody) {
         try {
             OutputStream os = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -98,26 +98,21 @@ public class HTTPClient {
             writer.close();
             os.close();
 
+            return urlConnection.getResponseCode();
+
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }
+        return -1;
     }
 
     public static int postWebpage(String url, Map<String, String> params) {
-        int responseStatus = -1;
+
         HttpURLConnection urlConnection = HTTPClient.getOpenHttpConnection(url, "POST");
         setCookie(urlConnection);
         String requestBody = HTTPClient.buildRequestBody(params);
-        HTTPClient.writeOutputStream(urlConnection, requestBody);
-        try {
-            responseStatus = urlConnection.getResponseCode();
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-        } finally {
-            urlConnection.disconnect();
-        }
+        int responseStatus = HTTPClient.writeOutputStream(urlConnection, requestBody);
         HTTPClient.readInputStream(urlConnection);
-
         return responseStatus;
     }
 }

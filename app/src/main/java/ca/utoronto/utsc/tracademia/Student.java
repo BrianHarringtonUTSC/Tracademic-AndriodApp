@@ -14,7 +14,6 @@ public class Student implements Serializable {
     private int experiencePoints;
     private int challengePoints;
     private int teachingPoints;
-    private int __v;
 
 
     public String getPointsInfo() {
@@ -84,13 +83,6 @@ public class Student implements Serializable {
         this.profileText = profileText;
     }
 
-    public int get__v() {
-        return __v;
-    }
-
-    public void set__v(int __v) {
-        this.__v = __v;
-    }
 
     public String getStudentNumber() {
         return this.studentNumber;

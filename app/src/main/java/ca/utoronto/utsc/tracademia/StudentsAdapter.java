@@ -37,10 +37,10 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     @Override
     public StudentsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view.
-        View v = LayoutInflater.from(viewGroup.getContext())
+        View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
 
-        return new ViewHolder(v, mCallback);
+        return new ViewHolder(view);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -63,10 +63,6 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         mStudents.addAll(Arrays.asList(students));
         mFilteredStudents = new ArrayList<>(mStudents);
         notifyDataSetChanged();
-    }
-
-    public List<Student> getStudents() {
-        return mStudents;
     }
 
     public List<Student> getFilteredStudents() {
@@ -92,18 +88,15 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mainText;
-        private TextView subText;
-        private StudentListener mCallback;
 
-        public ViewHolder(View v, StudentListener callback) {
-            super(v);
-            mainText = (TextView) v.findViewById(R.id.maintext);
-            mCallback = callback;
+        public ViewHolder(View view) {
+            super(view);
+            mainText = (TextView) view.findViewById(R.id.maintext);
 
             // Define click listener for the ViewHolder's View.
-            v.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mCallback.onStudentSelected(getAdapterPosition());

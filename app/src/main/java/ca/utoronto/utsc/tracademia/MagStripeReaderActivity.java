@@ -132,7 +132,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
 
     @Override
     public void onReceiveMsgAutoConfigProgress(int arg0) {
-        // TODO Auto-generated method stub
         Log.d(TAG, "onReceiveMsgAutoConfigProgress");
     }
 
@@ -170,7 +169,6 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgProcessingCardData() {
         Log.d(TAG, "onReceiveMsgProcessingCardData");
-
     }
 
     @Override
