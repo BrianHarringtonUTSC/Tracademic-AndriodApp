@@ -93,9 +93,9 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     }
 
     public enum PointType {
+        Challenge,
         Experience,
-        Teaching,
-        Challenge
+        Teaching
     }
 
     class GivePointsRequestTask extends AsyncTask<String, String, Integer> {
