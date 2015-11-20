@@ -57,6 +57,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         typePicker.setMinValue(0);
         typePicker.setMaxValue(pt.length - 1);
         typePicker.setDisplayedValues(types);
+        typePicker.setValue((int) Math.ceil(pt.length / 2));
 
         pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);

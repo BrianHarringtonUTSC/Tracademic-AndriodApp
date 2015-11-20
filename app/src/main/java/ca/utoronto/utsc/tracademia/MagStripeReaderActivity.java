@@ -188,7 +188,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         Log.d(TAG, "onReceiveMsgConnected");
         readerStatus.setTextColor(Color.parseColor("#339933"));
         uniMagReader.startSwipeCard();
-        readerStatus.setText("Ready to Scan card");
+        readerStatus.setText("Ready to scan card");
     }
 
     @Override
