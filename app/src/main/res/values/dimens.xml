@@ -10,7 +10,7 @@
     <!--  Semantic definitions  -->
     <dimen name="horizontal_page_margin">@dimen/margin_medium</dimen>
     <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
-    <dimen name="list_item_height">45dp</dimen>
+    <dimen name="list_item_height">55dp</dimen>
     <!-- Lower + button -->
     <dimen name="round_button_diameter">60dp</dimen>
     <dimen name="add_button_margin">20dp</dimen>
