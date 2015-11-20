@@ -21,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/points_amount_picker"
         android:layout_alignRight="@+id/student_info_textview"
-        android:layout_alignEnd="@+id/student_info_textview" />
+        android:layout_alignEnd="@+id/student_info_textview"
+        android:descendantFocusability="blocksDescendants"/>
 
     <NumberPicker
         android:id="@+id/points_amount_picker"
@@ -30,7 +31,8 @@
         android:layout_marginBottom="61dp"
         android:layout_above="@+id/give_points_button"
         android:layout_alignLeft="@+id/student_info_textview"
-        android:layout_alignStart="@+id/student_info_textview" />
+        android:layout_alignStart="@+id/student_info_textview"
+        android:descendantFocusability="blocksDescendants"/>
 
 
     <Button

@@ -65,7 +65,6 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         pointsPicker.setWrapSelectorWheel(false);
 
         getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
-
     }
 
     @Override
