@@ -3,20 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/card_reader_launcher_button"
         android:layout_width="@dimen/round_button_diameter"
         android:layout_height="@dimen/round_button_diameter"
-        android:layout_gravity="right|bottom"
+        android:layout_gravity="end|bottom"
         android:layout_marginBottom="15dp"
-        android:background="@drawable/oval"
-        android:elevation="@dimen/elevation_high"
-        android:src="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginEnd="15dp">
-    </ImageButton>
+        android:src="@android:drawable/ic_input_add"
+        android:tint="@android:color/white" />
 </FrameLayout>
