@@ -10,6 +10,7 @@
         android:id="@+id/maintext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/element_text"
         android:textSize="@dimen/main_text_size" />
 
