@@ -9,7 +9,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,12 +24,12 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     public static final String BASE_URL = "https://track-point.cloudapp.net/";
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
     public static final String ARG_STUDENT_NUMBER = "studentNumber";
-    public static final String ARG_POSITION = "position";
 
     private static final String TAG = "MainActivity";
 
     protected StudentsAdapter mAdapter;
     protected FragmentManager fragmentManager;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.options_menu, menu);
+        this.menu = menu;
 
         final MenuItem item = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -72,10 +72,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
         return item.getItemId() == R.id.action_search || super.onOptionsItemSelected(item);
     }
 
@@ -90,9 +86,16 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
         onStudentSelected(selectedStudent.getStudentNumber());
     }
 
+    public void closeSearchBar() {
+         menu.findItem(R.id.action_search).collapseActionView();
+    }
+
     @Override
     public void onStudentSelected(String studentNumber) {
         if (mAdapter.getStudentByStudentNumber(studentNumber) != null) {
+            // close search bar if open
+            closeSearchBar();
+
             StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
             Bundle args = new Bundle();
             args.putString(ARG_STUDENT_NUMBER, studentNumber);
@@ -152,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     @Override
     public void onBackStackChanged() {
         ActionBar actionBar = getSupportActionBar();
-
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(fragmentManager.getBackStackEntryCount() > 0);
         }
@@ -166,14 +168,12 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, query);
         mAdapter.getFilter().filter(query);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        Log.d(TAG, query);
         mAdapter.getFilter().filter(query);
         return false;
     }
