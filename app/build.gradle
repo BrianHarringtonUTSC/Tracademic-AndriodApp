@@ -27,4 +27,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.3.0'
     compile files('lib/UniMag_SDK_v5.0.jar')
     compile 'com.android.support:design:23.1.0'
+    compile 'com.mcxiaoke.volley:library:1.0.+'
 }

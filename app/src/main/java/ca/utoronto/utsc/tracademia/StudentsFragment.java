@@ -1,8 +1,8 @@
 package ca.utoronto.utsc.tracademia;
 
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,12 +15,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
+import java.util.HashMap;
 
 
 public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
 
-    private static final String TAG = "RecyclerViewFragment";
+    private static final String TAG = "StudentsFragment";
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
@@ -50,10 +58,41 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_container);
         mSwipeLayout.setOnRefreshListener(this);
 
-        GetStudentsRequestTask getStudentsRequestTask = new GetStudentsRequestTask();
-        getStudentsRequestTask.execute(MainActivity.BASE_URL +  "api/users");
-
+        loadStudents();
         return rootView;
+    }
+
+    private void loadStudents() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = MainActivity.BASE_URL + "api/users";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Student[] studentArray = new Gson().fromJson(response, Student[].class);
+                        if (mAdapter != null) {
+                            mAdapter.addItemsToList(studentArray);
+                        }
+                        mSwipeLayout.setRefreshing(false);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        "Failed to get students: " + error, Snackbar.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            public HashMap<String, String> getHeaders() {
+                return HTTPClient.getHeaders();
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     @Override
@@ -83,8 +122,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        GetStudentsRequestTask getStudentsRequestTask = new GetStudentsRequestTask();
-        getStudentsRequestTask.execute(MainActivity.BASE_URL + "api/users");
+        loadStudents();
     }
 
     @Override
@@ -97,23 +135,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public boolean onQueryTextChange(String query) {
         mAdapter.getFilter().filter(query);
         return false;
-    }
-
-
-    class GetStudentsRequestTask extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            return HTTPClient.getWebpage(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Student[] studentArray = new Gson().fromJson(result, Student[].class);
-            if (mAdapter != null) {
-                mAdapter.addItemsToList(studentArray);
-            }
-            mSwipeLayout.setRefreshing(false);
-        }
     }
 }
 

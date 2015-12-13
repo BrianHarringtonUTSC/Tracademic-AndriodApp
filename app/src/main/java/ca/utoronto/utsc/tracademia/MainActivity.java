@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
 
-    public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // DEV: "https://track-point.cloudapp.net/";
+    public static final String BASE_URL = "https://track-point.cloudapp.net/"; // "https://tracademic.utsc.utoronto.ca/"; // DEV:
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
     public static final String ARG_STUDENT_NUMBER = "studentNumber";
 

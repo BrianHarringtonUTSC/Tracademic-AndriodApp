@@ -10,14 +10,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HTTPClient {
     private static final String TAG = "HTTPClient";
-    static java.net.CookieManager mCookieManager = new java.net.CookieManager();
+    static CookieManager mCookieManager = new CookieManager();
 
     public static HttpURLConnection getOpenHttpConnection(String url, String requestMethod) {
         HttpURLConnection urlConnection = null;
@@ -34,12 +36,18 @@ public class HTTPClient {
 
     }
 
+    public static HashMap<String, String> getHeaders() {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("Cookie", TextUtils.join(";", HTTPClient.mCookieManager.getCookieStore().getCookies()));
+        params.put("x-no-csrf", "1");
+        return params;
+    }
+
     public static void setCookie(HttpURLConnection urlConnection) {
         if (HTTPClient.mCookieManager.getCookieStore().getCookies().size() > 0) {
             String cookie = TextUtils.join(";", HTTPClient.mCookieManager.getCookieStore().getCookies());
             urlConnection.setRequestProperty("Cookie", cookie);
         }
-
     }
 
     public static String readInputStream(HttpURLConnection urlConnection) {
