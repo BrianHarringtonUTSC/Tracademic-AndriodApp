@@ -139,8 +139,8 @@ public class LoginActivity extends Activity {
             Map<String, String> requestParams = new HashMap<>();
             requestParams.put("login", "true");
             requestParams.put("remember", "0");
-            requestParams.put("password", username);
-            requestParams.put("username", password);
+            requestParams.put("username", username);
+            requestParams.put("password", password);
             mAuthTask = new UserLoginTask(requestParams);
             mAuthTask.execute(MainActivity.BASE_URL + "api/User");
         }
@@ -200,7 +200,13 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPreExecute() {
             showProgress(true);
+
+            // this is to accept intermediate certificates such as comodo used by tracademic
+            // and self signed certificates for dev server
+            // exposes us to man in the middle attacks
+            // TODO: find a way to accept only comodo intermediate certificate when running on prod
             trustEveryone();
+
         }
 
         private void trustEveryone() {
@@ -247,6 +253,7 @@ public class LoginActivity extends Activity {
             try {
 
                 HttpURLConnection urlConnection = HTTPClient.getOpenHttpConnection(params[0], "POST");
+
 
                 String requestBody = HTTPClient.buildRequestBody(requestParams);
                 HTTPClient.writeOutputStream(urlConnection, requestBody);
