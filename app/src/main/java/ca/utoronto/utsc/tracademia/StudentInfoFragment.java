@@ -1,15 +1,20 @@
 package ca.utoronto.utsc.tracademia;
 
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,61 +82,60 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         if(v.getId()==R.id.give_points_button){
             pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
-            int num_points = pointsPicker.getValue();
-            if (num_points > 0) {
+            int numPoints = pointsPicker.getValue();
+            if (numPoints > 0) {
                 PointType pointType = PointType.values()[typePicker.getValue()];
                 String type = pointType.name().toLowerCase() + "Points";
-
-                Map<String, String> params  = new HashMap<>();
-                params.put("type", type);
-                params.put("amount", String.valueOf(num_points));
-
-                GivePointsRequestTask requestTask = new GivePointsRequestTask(params);
-                requestTask.execute(MainActivity.BASE_URL + "api/users/" + mStudent.get_id() + "/give");
+                givePoints(type, numPoints);
             }
         }
+    }
+
+    private void givePoints(final String type, final int numPoints) {
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = MainActivity.BASE_URL + "api/users/" + mStudent.get_id() + "/give";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String message = mStudent.getUsername() + " awarded " + numPoints + " " + type.replace("Points", " points");
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+                                .show();
+                        mCallback.onStudentInfoSubmitted();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        "Failed to give points" + error, Snackbar.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("type", type);
+                params.put("amount", String.valueOf(numPoints));
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                return HTTPClient.getHeaders();
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     public enum PointType {
         Challenge,
         Experience,
         Teaching
-    }
-
-    class GivePointsRequestTask extends AsyncTask<String, String, Integer> {
-        private final Map<String, String> requestParams;
-
-        public GivePointsRequestTask(Map<String, String> params) {
-            this.requestParams = params;
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            try {
-                return HTTPClient.postWebpage(params[0], requestParams);
-
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-                return -1;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Integer responseStatus) {
-
-            String message;
-
-            if (responseStatus == 200) {
-                String type = requestParams.get("type").replace("Points", " points");
-                message = mStudent.getUsername() + " awarded " + requestParams.get("amount") + " " + type;
-            } else {
-                message = "Failed to award points. Response status: "  + responseStatus;
-            }
-
-            Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-                    .show();
-            mCallback.onStudentInfoSubmitted();
-        }
     }
 }
 
