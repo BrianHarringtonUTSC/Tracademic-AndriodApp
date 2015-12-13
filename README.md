@@ -27,7 +27,7 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 - Handling server down, internet down after app logs in, edge cases.
 - Logout.
 - Make code more efficient.
-  - Currently a student lookup takes 2n steps where n is the number of students. Students are looked up based on student number so it makes sense to have a map mapping student number to student objects. Unfortunately, the adapter which displays the list of students requires a list to work. The positions also need to be consistent (ruling out HashMap). One solution is to ues a LinkedHashMap (2n storage), or TreeMap (logarithmic lookup and inserts).
+  - Currently a student lookup takes 2n steps where n is the number of students. Students are looked up based on student number so it makes sense to have a map mapping student number to student objects. Unfortunately, the adapter which displays the list of students requires a list to work. The positions also need to be consistent (ruling out HashMap). One solution is to use a LinkedHashMap (2n storage), or TreeMap (logarithmic lookup and inserts).
 
 
 ## Development Tips
