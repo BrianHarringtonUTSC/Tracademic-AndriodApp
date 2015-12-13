@@ -112,7 +112,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
             @Override
             public void onErrorResponse(VolleyError error) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content),
-                        "Failed to give points" + error, Snackbar.LENGTH_LONG).show();
+                        "Failed to give points: " + error, Snackbar.LENGTH_LONG).show();
             }
         }) {
             @Override

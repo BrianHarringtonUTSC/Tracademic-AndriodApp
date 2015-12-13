@@ -2,17 +2,11 @@ package ca.utoronto.utsc.tracademia;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,13 +16,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
@@ -43,12 +41,6 @@ import javax.net.ssl.X509TrustManager;
 public class LoginActivity extends Activity {
 
     private static final String TAG = "LoginActivity";
-    private static final String COOKIES_HEADER = "Set-Cookie";
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
@@ -89,14 +81,11 @@ public class LoginActivity extends Activity {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to sign in the ccount specified by the login form.
      * If there are form errors (invalid username, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -135,14 +124,80 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            performLogin(username, password);
+        }
+    }
 
-            Map<String, String> requestParams = new HashMap<>();
-            requestParams.put("login", "true");
-            requestParams.put("remember", "0");
-            requestParams.put("username", username);
-            requestParams.put("password", password);
-            mAuthTask = new UserLoginTask(requestParams);
-            mAuthTask.execute(MainActivity.BASE_URL + "api/User");
+    private void performLogin(final String username, final String password) {
+        // this is to accept intermediate certificates such as comodo used by tracademic
+        // and self signed certificates for dev server
+        // exposes us to man in the middle attacks
+        // TODO: find a way to accept only comodo intermediate certificate when running on prod
+        trustEveryone();
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = MainActivity.BASE_URL + "api/user";
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                showProgress(false);
+                Snackbar.make(findViewById(android.R.id.content),
+                        "Login failed: " + error, Snackbar.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("login", "true");
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                return HTTPClient.getHeaders();
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    private void trustEveryone() {
+        try {
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain,
+                                               String authType) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain,
+                                               String authType) throws CertificateException {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(
+                    context.getSocketFactory());
+        } catch (Exception e) { // should never happen
+            e.printStackTrace();
         }
     }
 
@@ -157,7 +212,6 @@ public class LoginActivity extends Activity {
     /**
      * Shows the progress UI and hides the login form.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -178,139 +232,6 @@ public class LoginActivity extends Activity {
                 mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<String, String, Boolean> {
-
-
-        private final Map<String, String> requestParams;
-        private int responseStatus;
-        private String errorMsg;
-
-        UserLoginTask(Map<String, String> requestParams) {
-            this.requestParams = requestParams;
-            responseStatus = 0;
-            errorMsg = "";
-        }
-
-        @Override
-        protected void onPreExecute() {
-            showProgress(true);
-
-            // this is to accept intermediate certificates such as comodo used by tracademic
-            // and self signed certificates for dev server
-            // exposes us to man in the middle attacks
-            // TODO: find a way to accept only comodo intermediate certificate when running on prod
-            trustEveryone();
-        }
-
-        private void trustEveryone() {
-            try {
-                HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                });
-                SSLContext context = SSLContext.getInstance("TLS");
-                context.init(null, new X509TrustManager[]{new X509TrustManager() {
-                    public void checkClientTrusted(X509Certificate[] chain,
-                                                   String authType) throws CertificateException {
-                    }
-
-                    public void checkServerTrusted(X509Certificate[] chain,
-                                                   String authType) throws CertificateException {
-                    }
-
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
-                }}, new SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(
-                        context.getSocketFactory());
-            } catch (Exception e) { // should never happen
-                e.printStackTrace();
-            }
-        }
-
-        public boolean networkAvailable() {
-            return ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
-        }
-        @Override
-        protected Boolean doInBackground(String... params) {
-
-            if (!networkAvailable()) {
-                responseStatus = -1;
-                errorMsg = "No internet connection";
-                return false;
-            }
-            boolean result = true;
-
-            try {
-
-                HttpURLConnection urlConnection = HTTPClient.getOpenHttpConnection(params[0], "POST");
-
-                String requestBody = HTTPClient.buildRequestBody(requestParams);
-                HTTPClient.writeOutputStream(urlConnection, requestBody);
-
-                try {
-                    Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
-
-                    responseStatus = urlConnection.getResponseCode();
-
-                    if (responseStatus == 200) {
-                        List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
-
-                        if (cookiesHeader != null) {
-                            for (String cookie : cookiesHeader) {
-                                HTTPClient.mCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-                            }
-                        } else {
-                            result = false;
-                            errorMsg = "No cookie set.";
-                        }
-                    } else {
-                        result = false;
-                        errorMsg = "Response Status " + responseStatus;
-                    }
-                } finally {
-                    urlConnection.disconnect();
-                }
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                if (responseStatus == 401) {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus();
-                }
-                Snackbar.make(findViewById(android.R.id.content), errorMsg, Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
     }
 }
 
