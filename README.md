@@ -1,7 +1,7 @@
 # Tracademic Android Application
 
 ## Warnings
-- The Mag stripe reader uses the headphone jack to detect card swipes. To do this as accurately as possible, it turns the volume to max. If you have headphones plugged in, as I unfortunately once did, your ears will hear the delightful sound of something resembling a banshee screaming at max volume. Or me singing. DO NOT LAUNCH THE MAG STRIPE READER WITH HEADPHONES PLUGGED IN! The application resets the volume to what the user defined it before when the mag stripe reader closes.
+- The Mag stripe reader uses the headphone jack to detect card swipes. To do this as accurately as possible, it turns the volume to max. If you have headphones plugged in, as I unfortunately once did, your ears will hear the delightful sound of something resembling a banshee screaming at max volume. Or me singing. DO NOT LAUNCH THE MAG STRIPE READER WITH HEADPHONES PLUGGED IN! The application resets the volume to what the user defined it before launching the mag stripe reader when the closes.
 
 ## Demo
 https://www.youtube.com/watch?v=7H90pwhxFBQ
