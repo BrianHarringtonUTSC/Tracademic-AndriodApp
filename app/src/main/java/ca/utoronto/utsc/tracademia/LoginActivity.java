@@ -206,7 +206,6 @@ public class LoginActivity extends Activity {
             // exposes us to man in the middle attacks
             // TODO: find a way to accept only comodo intermediate certificate when running on prod
             trustEveryone();
-
         }
 
         private void trustEveryone() {
@@ -253,7 +252,6 @@ public class LoginActivity extends Activity {
             try {
 
                 HttpURLConnection urlConnection = HTTPClient.getOpenHttpConnection(params[0], "POST");
-
 
                 String requestBody = HTTPClient.buildRequestBody(requestParams);
                 HTTPClient.writeOutputStream(urlConnection, requestBody);
