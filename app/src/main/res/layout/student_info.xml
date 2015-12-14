@@ -1,64 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/student_info_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="top|start"
         android:layout_marginTop="37dp"
         android:text="@string/element_text"
         android:textSize="37dp"
-        android:textStyle="bold"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:textStyle="bold" />
 
-    <NumberPicker
-        android:id="@+id/point_type_picker"
+    <TextView
+        android:id="@+id/student_points_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/points_amount_picker"
-        android:layout_alignRight="@+id/student_info_textview"
-        android:layout_alignEnd="@+id/student_info_textview"
-        android:descendantFocusability="blocksDescendants"/>
+        android:layout_below="@+id/student_info_textview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="20dp" />
 
-    <NumberPicker
-        android:id="@+id/points_amount_picker"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="61dp"
+        android:layout_height="fill_parent"
         android:layout_above="@+id/give_points_button"
-        android:layout_alignLeft="@+id/student_info_textview"
-        android:layout_alignStart="@+id/student_info_textview"
-        android:descendantFocusability="blocksDescendants"/>
+        android:layout_below="@id/student_points_info"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:paddingBottom="25dp">
+
+        <NumberPicker
+            android:id="@+id/point_type_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:descendantFocusability="blocksDescendants" />
+
+        <NumberPicker
+            android:id="@+id/points_amount_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:descendantFocusability="blocksDescendants" />
+    </LinearLayout>
 
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/submit"
         android:id="@+id/give_points_button"
-        android:layout_marginBottom="32dp"
-        android:layout_alignParentBottom="true"
-        android:src="@android:drawable/ic_input_add"
-        android:textColor="#ffffff"
-        android:background="#002A5C"
-        android:layout_alignRight="@+id/point_type_picker"
-        android:layout_alignEnd="@+id/point_type_picker"
-        android:layout_alignLeft="@+id/points_amount_picker"
-        android:layout_alignStart="@+id/points_amount_picker" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/student_points_info"
-        android:layout_marginTop="25dp"
-        android:layout_below="@+id/student_info_textview"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:background="#002A5C"
+        android:src="@android:drawable/ic_input_add"
+        android:text="@string/submit"
+        android:textColor="#ffffff" />
 
 </RelativeLayout>
