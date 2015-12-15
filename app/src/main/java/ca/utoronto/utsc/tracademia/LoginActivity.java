@@ -17,11 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -135,8 +133,6 @@ public class LoginActivity extends Activity {
         // TODO: find a way to accept only comodo intermediate certificate when running on prod
         trustEveryone();
 
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
         String url = MainActivity.BASE_URL + "api/user";
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -166,11 +162,12 @@ public class LoginActivity extends Activity {
 
             @Override
             public Map<String, String> getHeaders() {
-                return HTTPClient.getHeaders();
+                return HTTPClientSingleton.getRequestHeaders();
             }
         };
+
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        HTTPClientSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     private void trustEveryone() {

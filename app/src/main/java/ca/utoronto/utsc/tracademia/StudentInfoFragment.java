@@ -10,11 +10,9 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,9 +90,6 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     }
 
     private void givePoints(final String type, final int numPoints) {
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = MainActivity.BASE_URL + "api/users/" + mStudent.get_id() + "/give";
 
         // Request a string response from the provided URL.
@@ -103,10 +98,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onResponse(String response) {
                         String message = mStudent.getUsername() + " awarded " + numPoints + " " + type.replace("Points", " points");
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-                                .show();
                         mCallback.onStudentInfoSubmitted();
-
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -125,11 +118,12 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
             @Override
             public Map<String, String> getHeaders() {
-                return HTTPClient.getHeaders();
+                return HTTPClientSingleton.getRequestHeaders();
             }
         };
+
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
     public enum PointType {

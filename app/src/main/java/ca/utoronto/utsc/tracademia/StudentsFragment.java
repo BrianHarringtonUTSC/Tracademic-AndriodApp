@@ -16,11 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -63,8 +61,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void loadStudents() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = MainActivity.BASE_URL + "api/users";
 
         // Request a string response from the provided URL.
@@ -76,7 +72,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Student[] studentArray = new Gson().fromJson(response, Student[].class);
                         if (mAdapter != null) {
                             mAdapter.addItemsToList(studentArray);
-                        }
+                    }
                         mSwipeLayout.setRefreshing(false);
                     }
                 }, new Response.ErrorListener() {
@@ -88,11 +84,12 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         }) {
             @Override
             public HashMap<String, String> getHeaders() {
-                return HTTPClient.getHeaders();
+                return HTTPClientSingleton.getRequestHeaders();
             }
         };
+
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
     @Override

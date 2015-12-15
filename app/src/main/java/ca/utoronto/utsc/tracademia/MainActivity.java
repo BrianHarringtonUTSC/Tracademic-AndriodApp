@@ -21,11 +21,9 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
     public static final String ARG_STUDENT_NUMBER = "studentNumber";
-
     private static final String TAG = "MainActivity";
-
     protected StudentsAdapter mAdapter;
-    protected FragmentManager fragmentManager;
+    protected FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +40,11 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
         mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
 
-        fragmentManager = getFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(this);
+        mFragmentManager = getFragmentManager();
+        mFragmentManager.addOnBackStackChangedListener(this);
 
         StudentsFragment studentsFragment = new StudentsFragment();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, studentsFragment);
         transaction.commit();
     }
@@ -75,15 +73,15 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
             transaction.addToBackStack(null);
             transaction.commit();
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Student Number not given or found", Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(findViewById(android.R.id.content),
+                    "Student Number not given or found", Snackbar.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onStudentInfoSubmitted() {
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+        if (mFragmentManager.getBackStackEntryCount() > 0) {
+            mFragmentManager.popBackStack();
         }
     }
 
@@ -109,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+        if (mFragmentManager.getBackStackEntryCount() > 0) {
+            mFragmentManager.popBackStack();
         } else {
             super.onBackPressed();
         }
@@ -120,13 +118,15 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     public void onBackStackChanged() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(fragmentManager.getBackStackEntryCount() > 0);
+            actionBar.setDisplayHomeAsUpEnabled(mFragmentManager.getBackStackEntryCount() > 0);
         }
     }
 
     @Override
     public boolean  onSupportNavigateUp() {
-        fragmentManager.popBackStack();
+        if (mFragmentManager.getBackStackEntryCount() > 0) {
+            mFragmentManager.popBackStack();
+        }
         return true;
     }
 }
