@@ -86,13 +86,8 @@ public class PersistentCookieStore implements CookieStore {
 
     @Override
     public void add(URI uri, HttpCookie cookie) {
-        if (cookie.getName().equals("sessionid")) {
-            // if the cookie that the cookie store attempt to add is a session cookie,
-            // we remove the older cookie and save the new one in shared preferences
-            remove(URI.create(cookie.getDomain()), cookie);
-            saveSessionCookie(cookie);
-        }
-
+        remove(URI.create(cookie.getDomain()), cookie);
+        saveSessionCookie(cookie);
         mStore.add(URI.create(cookie.getDomain()), cookie);
     }
 
@@ -122,7 +117,7 @@ public class PersistentCookieStore implements CookieStore {
     }
 
     private String getJsonSessionCookieString() {
-        return getPrefs().getString(PREF_SESSION_COOKIE, PREF_DEFAULT_STRING);
+        return getSharedPreferences().getString(PREF_SESSION_COOKIE, PREF_DEFAULT_STRING);
     }
 
     /**
@@ -133,12 +128,12 @@ public class PersistentCookieStore implements CookieStore {
     private void saveSessionCookie(HttpCookie cookie) {
         Gson gson = new Gson();
         String jsonSessionCookieString = gson.toJson(cookie);
-        SharedPreferences.Editor editor = getPrefs().edit();
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putString(PREF_SESSION_COOKIE, jsonSessionCookieString);
         editor.apply();
     }
 
-    private SharedPreferences getPrefs() {
+    private SharedPreferences getSharedPreferences() {
         return mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 }

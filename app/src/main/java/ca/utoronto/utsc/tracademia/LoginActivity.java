@@ -22,17 +22,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * A login screen that offers login via username/password.
@@ -132,12 +123,7 @@ public class LoginActivity extends Activity {
     }
 
     private void performLogin(final String username, final String password) {
-        // this is to accept intermediate certificates such as comodo used by tracademic
-        // and self signed certificates for dev server
-        // exposes us to man in the middle attacks
-        // TODO: find a way to accept only comodo intermediate certificate when running on prod
-        trustEveryone();
-
+        HTTPClientSingleton httpClientSingleton = HTTPClientSingleton.getInstance(this);
         String url = MainActivity.BASE_URL + "api/user";
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -172,35 +158,7 @@ public class LoginActivity extends Activity {
         };
 
         // Add the request to the RequestQueue.
-        HTTPClientSingleton.getInstance(this).addToRequestQueue(stringRequest);
-    }
-
-    private void trustEveryone() {
-        try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {
-                }
-
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-            }}, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(
-                    context.getSocketFactory());
-        } catch (Exception e) { // should never happen
-            e.printStackTrace();
-        }
+        httpClientSingleton.addToRequestQueue(stringRequest);
     }
 
     private boolean isUsernameValid(String username) {
