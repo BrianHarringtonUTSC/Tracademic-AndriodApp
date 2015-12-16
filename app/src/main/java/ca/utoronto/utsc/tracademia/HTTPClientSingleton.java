@@ -8,9 +8,15 @@ import com.android.volley.toolbox.Volley;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HTTPClientSingleton {
+    private static final String SESSION_COOKIE_NAME = "points.sess";
+
     private static HTTPClientSingleton mInstance;
     private Context mContext;
     private RequestQueue mRequestQueue;
@@ -29,8 +35,8 @@ public class HTTPClientSingleton {
         return mInstance;
     }
 
-    public static HashMap<String, String> getRequestHeaders() {
-        HashMap<String, String> params = new HashMap<>();
+    public static Map<String, String> getRequestHeaders() {
+        Map<String, String> params = new HashMap<>();
         params.put("x-no-csrf", "1");
         return params;
     }
@@ -50,9 +56,14 @@ public class HTTPClientSingleton {
 
     public CookieManager getCookieManager() {
         if (mCookieManager == null) {
-            mCookieManager = new CookieManager();
+            mCookieManager = new CookieManager(new PersistentCookieStore(mContext.getApplicationContext()), CookiePolicy.ACCEPT_ALL);
             CookieHandler.setDefault(mCookieManager);
         }
         return mCookieManager;
+    }
+
+    public boolean isLoggedIn() {
+        List<HttpCookie> cookies = getCookieManager().getCookieStore().getCookies();
+        return cookies.size() == 1 && cookies.get(0).getName().equals(SESSION_COOKIE_NAME);
     }
 }

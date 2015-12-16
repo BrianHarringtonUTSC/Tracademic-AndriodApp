@@ -21,7 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
@@ -83,7 +83,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         }) {
             @Override
-            public HashMap<String, String> getHeaders() {
+            public Map<String, String> getHeaders() {
                 return HTTPClientSingleton.getRequestHeaders();
             }
         };

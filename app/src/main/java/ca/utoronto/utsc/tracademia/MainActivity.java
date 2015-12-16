@@ -16,7 +16,6 @@ import java.util.ArrayList;
  *  Authors: Umair Idris and Markus Friesen
  */
 public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
-
     //    public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // PROD
     public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -28,12 +27,19 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         // If being restored don't create new frag
         if (savedInstanceState != null) {
             return;
         }
+
+        if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        setContentView(R.layout.activity_main);
 
         FloatingActionButton cardReaderLauncherButton = (FloatingActionButton) findViewById(R.id.card_reader_launcher_button);
         cardReaderLauncherButton.setOnClickListener(this);
