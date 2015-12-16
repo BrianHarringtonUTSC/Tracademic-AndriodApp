@@ -114,8 +114,9 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
             if (constraint.length() == 0) {
                 mFilteredStudents.addAll(mStudents);
             } else {
+                String filter = constraint.toString().toLowerCase();
                 for (Student student : mStudents) {
-                    if (student.getDisplayName().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                    if (student.getUsername().toLowerCase().startsWith(filter)) {
                         mFilteredStudents.add(student);
                     }
                 }

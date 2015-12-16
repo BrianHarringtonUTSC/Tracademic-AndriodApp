@@ -2,6 +2,7 @@ package ca.utoronto.utsc.tracademia;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -25,6 +26,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class HTTPClientSingleton {
     private static final String SESSION_COOKIE_NAME = "points.sess";
+    private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
 
     private static HTTPClientSingleton mInstance;
     private Context mContext;
@@ -89,7 +91,15 @@ public class HTTPClientSingleton {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        setRequestTimeout(req);
         getRequestQueue().add(req);
+    }
+
+    public void setRequestTimeout(Request request) {
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                REQUEST_TIMEOUT,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     public CookieManager getCookieManager() {

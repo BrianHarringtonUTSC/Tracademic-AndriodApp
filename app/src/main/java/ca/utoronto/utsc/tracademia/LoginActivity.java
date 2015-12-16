@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -68,10 +67,6 @@ public class LoginActivity extends Activity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        if (HTTPClientSingleton.getInstance(this).getCookieManager().getCookieStore().getCookies().size() > 0)
-            Log.d(TAG, HTTPClientSingleton.getInstance(this).getCookieManager().getCookieStore().getCookies().get(0).getName());
-
     }
 
     /**

@@ -16,11 +16,11 @@ import java.util.ArrayList;
  *  Authors: Umair Idris and Markus Friesen
  */
 public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
-    //    public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // PROD
-    public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
+    public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // PROD
+    //    public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
     public static final String ARG_STUDENT_NUMBER = "studentNumber";
-    private static final String TAG = "MainActivity";
+
     protected StudentsAdapter mAdapter;
     protected FragmentManager mFragmentManager;
 
