@@ -28,15 +28,15 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // If being restored don't create new frag
-        if (savedInstanceState != null) {
-            return;
-        }
-
         if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
+        }
+
+        // If being restored don't create new frag
+        if (savedInstanceState != null) {
+            return;
         }
 
         setContentView(R.layout.activity_main);
