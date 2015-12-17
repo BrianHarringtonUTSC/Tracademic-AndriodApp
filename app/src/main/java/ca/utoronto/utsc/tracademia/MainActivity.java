@@ -27,32 +27,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        setContentView(R.layout.activity_main);
 
         // If being restored don't create new frag
         if (savedInstanceState != null) {
             return;
         }
 
-        setContentView(R.layout.activity_main);
+        if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            FloatingActionButton cardReaderLauncherButton = (FloatingActionButton) findViewById(R.id.card_reader_launcher_button);
+            cardReaderLauncherButton.setOnClickListener(this);
 
-        FloatingActionButton cardReaderLauncherButton = (FloatingActionButton) findViewById(R.id.card_reader_launcher_button);
-        cardReaderLauncherButton.setOnClickListener(this);
+            mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
 
-        mAdapter = new StudentsAdapter(new ArrayList<Student>(), this);
+            mFragmentManager = getFragmentManager();
+            mFragmentManager.addOnBackStackChangedListener(this);
 
-        mFragmentManager = getFragmentManager();
-        mFragmentManager.addOnBackStackChangedListener(this);
-
-        StudentsFragment studentsFragment = new StudentsFragment();
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        transaction.add(R.id.fragment_container, studentsFragment);
-        transaction.commit();
+            StudentsFragment studentsFragment = new StudentsFragment();
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
+            transaction.add(R.id.fragment_container, studentsFragment);
+            transaction.commit();
+        }
     }
 
     public StudentsAdapter getStudentsAdapter() {

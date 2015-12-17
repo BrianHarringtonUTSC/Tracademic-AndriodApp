@@ -110,12 +110,16 @@ public class PersistentCookieStore implements CookieStore {
 
     @Override
     public boolean remove(URI uri, HttpCookie cookie) {
-        return mStore.remove(uri, cookie);
+        boolean removed = mStore.remove(uri, cookie);
+        if (removed) {
+            deleteSharedPreferences();
+        }
+        return removed;
     }
 
     @Override
     public boolean removeAll() {
-        getSharedPreferences().edit().clear().apply();
+        deleteSharedPreferences();
         return mStore.removeAll();
     }
 
@@ -133,10 +137,14 @@ public class PersistentCookieStore implements CookieStore {
         String jsonSessionCookieString = gson.toJson(cookie);
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putString(PREF_SESSION_COOKIE, jsonSessionCookieString);
-        editor.apply();
+        editor.commit();
     }
 
     private SharedPreferences getSharedPreferences() {
         return mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    private void deleteSharedPreferences() {
+        getSharedPreferences().edit().remove(PREF_SESSION_COOKIE).commit();
     }
 }
