@@ -33,5 +33,5 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 - Rebuild and push the APK after every commit (Build -> Generate Signed APK).
 
 ## Card Reader
-- The current card reader in use is the (Unimag Shuttle)[http://www.idtechproducts.com/products/mobile-readers/141.html]. It leaves much to be desired but does work. There is one giant XML file with configurations and frequencies for the headphone jack of various phones and tablets. To add support for a new phone or tablet simply add a corresponding entry to the xml file. They seem to periodically update the XML file so it should also be updated in the app.
-- The XML file, documentation and code can be found in the (Unimag Shuttle SDK)[http://sdk.idtechproducts.com/sdk_info.asp]. The password is 393FFCC6.
+- The current card reader in use is the [Unimag Shuttle](http://www.idtechproducts.com/products/mobile-readers/141.html). It leaves much to be desired but does work. There is one giant XML file with configurations and frequencies for the headphone jack of various phones and tablets. To add support for a new phone or tablet simply add a corresponding entry to the xml file. They seem to periodically update the XML file so it should also be updated in the app.
+- The XML file, documentation and code can be found in the [Unimag Shuttle SDK](http://sdk.idtechproducts.com/sdk_info.asp). The password is 393FFCC6.
