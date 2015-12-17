@@ -24,24 +24,24 @@
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/login_progress"
         android:orientation="vertical"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:layout_alignTop="@+id/login_progress"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:paddingRight="24dp">
 
-        <ImageView android:src="@drawable/logo"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="100dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/logo" />
 
         <AutoCompleteTextView
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/prompt_email"
-            android:inputType="textEmailAddress"
+            android:hint="@string/prompt_username"
             android:maxLines="1"
             android:singleLine="true" />
 
@@ -63,10 +63,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:background="@color/primary"
             android:text="@string/action_sign_in"
-            android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:background="@color/primary" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 

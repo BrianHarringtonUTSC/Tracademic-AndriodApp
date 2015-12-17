@@ -23,6 +23,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     protected PointType pointType;
     protected NumberPicker typePicker, pointsPicker;
     protected TextView studentInfoTextView, studentPointInfoTextView;
+    protected View mSubmitButtonView;
     private StudentsAdapter mAdapter;
     private Student mStudent;
     private MainActivity mCallback;
@@ -67,7 +68,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         pointsPicker.setMaxValue(5);
         pointsPicker.setWrapSelectorWheel(false);
 
-        getActivity().findViewById(R.id.give_points_button).setOnClickListener(this);
+        mSubmitButtonView = getActivity().findViewById(R.id.give_points_button);
+        mSubmitButtonView.setOnClickListener(this);
     }
 
     @Override
@@ -104,6 +106,8 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                // make submit button visible again
+                mSubmitButtonView.setVisibility(View.VISIBLE);
                 Snackbar.make(getActivity().findViewById(android.R.id.content),
                         "Failed to give points: " + error, Snackbar.LENGTH_LONG).show();
             }
@@ -121,6 +125,9 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
                 return HTTPClientSingleton.getRequestHeaders();
             }
         };
+
+        // hide the submit button so request can't be submitted twice
+        mSubmitButtonView.setVisibility(View.INVISIBLE);
 
         // Add the request to the RequestQueue.
         HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
