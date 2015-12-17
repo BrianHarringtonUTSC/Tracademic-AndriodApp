@@ -9,7 +9,7 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 ## Installation Instructions
 
 #### User
-- Download and launch app-release-unsigned.apk on your Android smartphone. 
+- Download and launch app/app-release.apk on your Android smartphone. 
 - NOTE: Ensure that under Settings -> Security you have allowed "Unknown Sources".
 
 #### Developer
@@ -30,4 +30,4 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
   - The Tracademic application was built with Material Design in mind. For example, it uses a [Floating Action Button](https://www.google.com/design/spec/components/buttons-floating-action-button.html) to launch the Mag stripe reader. If you are adding core functionaltiy, such as scanning T-cards using the phone's camera, or the checkin functionaltiy, you should use the menu which launches from the pressing the Floating Action Button [(example)](https://material-design.storage.googleapis.com/publish/material_v_4/material_ext_publish/0B6GnvA6rl3tYWEZGZFBuc1RxMEk/components_fab_flyouts_do.png).
   - The Tracademic application uses [Fragments](http://developer.android.com/guide/components/fragments.html) as recommended by Google to provide a responsive and fluid experience. The main activity controls two fragments (one to list all students and one for opening a student's info). It implements an interface which allows us to launch the appropriate fragments easily.
 - Change the BASE_URL to the dev server to test changes.
-- Rebuild and push the APK after every commit.
+- Rebuild and push the APK after every commit (Build -> Generate Signed APK).
