@@ -20,14 +20,14 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
 
     private List<Student> mStudents;
     private List<Student> mFilteredStudents;
-    private StudentListener mCallback;
+    private MainActivity mCallback;
 
     /**
      * Initialize the dataset of the Adapter.
      *
      * @param students String[] containing the data to populate views to be used by RecyclerView.
      */
-    public StudentsAdapter(List<Student> students, StudentListener callback) {
+    public StudentsAdapter(List<Student> students, MainActivity callback) {
         mStudents = students;
         mFilteredStudents = new ArrayList<>(mStudents);
         mCallback = callback;

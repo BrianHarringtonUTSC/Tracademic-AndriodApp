@@ -31,6 +31,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected SwipeRefreshLayout mSwipeLayout;
+    protected MainActivity mCallBack;
     protected StudentsAdapter mAdapter;
 
     @Override
@@ -45,7 +46,8 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         View rootView = inflater.inflate(R.layout.recycler_view, container, false);
         rootView.setTag(TAG);
 
-        mAdapter = ((StudentListener) getActivity()).getStudentsAdapter();
+        mCallBack = (MainActivity) getActivity();
+        mAdapter = mCallBack.getStudentsAdapter();
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
@@ -107,7 +109,17 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() == R.id.action_search || super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                return true;
+            case R.id.action_logout:
+                mCallBack.logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
 

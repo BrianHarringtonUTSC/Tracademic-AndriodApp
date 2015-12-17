@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /*
  *  Authors: Umair Idris and Markus Friesen
  */
-public class MainActivity extends AppCompatActivity implements StudentListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, FragmentManager.OnBackStackChangedListener {
     public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // PROD
     //    public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
     public static final int GET_STUDENT_NUMBER_REQUEST = 1;
@@ -55,18 +55,15 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
         transaction.commit();
     }
 
-    @Override
     public StudentsAdapter getStudentsAdapter() {
         return mAdapter;
     }
 
-    @Override
     public void onStudentSelected(int position) {
         Student selectedStudent = mAdapter.getFilteredStudents().get(position);
         onStudentSelected(selectedStudent.getStudentNumber());
     }
 
-    @Override
     public void onStudentSelected(String studentNumber) {
         if (mAdapter.getStudentByStudentNumber(studentNumber) != null) {
             StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
@@ -84,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
         }
     }
 
-    @Override
     public void onStudentInfoSubmitted() {
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStack();
@@ -129,10 +125,17 @@ public class MainActivity extends AppCompatActivity implements StudentListener, 
     }
 
     @Override
-    public boolean  onSupportNavigateUp() {
+    public boolean onSupportNavigateUp() {
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStack();
         }
         return true;
+    }
+
+    public void logout() {
+        HTTPClientSingleton.getInstance(this).removeAllCookies();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

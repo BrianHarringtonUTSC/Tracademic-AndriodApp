@@ -25,7 +25,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
     protected TextView studentInfoTextView, studentPointInfoTextView;
     private StudentsAdapter mAdapter;
     private Student mStudent;
-    private StudentListener mCallback;
+    private MainActivity mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,7 +33,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         View rootView = inflater.inflate(R.layout.student_info, container, false);
         rootView.setTag(TAG);
 
-        mCallback = (StudentListener) getActivity();
+        mCallback = (MainActivity) getActivity();
         mAdapter = mCallback.getStudentsAdapter();
 
         return rootView;

@@ -114,4 +114,8 @@ public class HTTPClientSingleton {
         List<HttpCookie> cookies = getCookieManager().getCookieStore().getCookies();
         return cookies.size() == 1 && cookies.get(0).getName().equals(SESSION_COOKIE_NAME);
     }
+
+    public void removeAllCookies() {
+        getCookieManager().getCookieStore().removeAll();
+    }
 }

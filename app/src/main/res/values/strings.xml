@@ -1,15 +1,12 @@
 <resources>
     <string name="app_name">Tracademic</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_title">Confirm Points</string>
     <string name="cancel">Edit</string>
     <string name="element_text">Element</string>
-    <string name="grid_layout_manager">Grid Layout Manager</string>
     <string name="hello_world">Hello world!</string>
-    <string name="leadboard">Leaderboard</string>
     <string name="libraryNumber">LibraryNumber</string>
-    <string name="linear_layout_manager">Linear Layout Manager</string>
     <string name="name">Name</string>
     <string name="_id">_Id</string>
     <string name="submit">Submit</string>

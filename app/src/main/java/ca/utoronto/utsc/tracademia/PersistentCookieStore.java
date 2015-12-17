@@ -80,7 +80,9 @@ public class PersistentCookieStore implements CookieStore {
         if (!jsonSessionCookie.equals(PREF_DEFAULT_STRING)) {
             Gson gson = new Gson();
             HttpCookie cookie = gson.fromJson(jsonSessionCookie, HttpCookie.class);
-            mStore.add(URI.create(cookie.getDomain()), cookie);
+            if (!cookie.hasExpired()) {
+                mStore.add(URI.create(cookie.getDomain()), cookie);
+            }
         }
     }
 
