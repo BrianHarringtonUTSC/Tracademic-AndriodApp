@@ -115,6 +115,7 @@ public class PersistentCookieStore implements CookieStore {
 
     @Override
     public boolean removeAll() {
+        getSharedPreferences().edit().clear().apply();
         return mStore.removeAll();
     }
 
