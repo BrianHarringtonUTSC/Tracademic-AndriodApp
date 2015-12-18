@@ -23,7 +23,7 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 - Fix certificate issues to prevent Man in the Middle attacks.
 - Make code more efficient.
   - Currently a student lookup takes 2n steps where n is the number of students. Students are looked up based on student number so it makes sense to have a map mapping student number to student objects. Unfortunately, the adapter which displays the list of students requires a list to work. The positions also need to be consistent (ruling out HashMap). One solution is to use a LinkedHashMap (2n storage), or TreeMap (logarithmic lookup and inserts).
-  - The app currently gets all students and re renders the list in the background. This lets us avoid having to manually update an indivudal student when a point is given to them and since the update happens in the background, the user does not have to wait, but it is inefficient. A better way would be to update the student's points manually and then do a GET api/user/:id to confirm that the server is consistent with our info.
+  - The app currently gets all students and re renders the list in the background every time a user goes to view the list of students. This lets us avoid having to manually update an indivudal student when a point is given to them and since the update happens in the background, the user does not have to wait, but it is inefficient. A better way would be to update the student's points manually and then do a GET api/user/:id to confirm that the server is consistent with our info.
 
 
 ## Development Tips
