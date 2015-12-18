@@ -118,7 +118,7 @@ public class LoginActivity extends Activity {
     }
 
     private void performLogin(final String username, final String password) {
-        HTTPClientSingleton httpClientSingleton = HTTPClientSingleton.getInstance(this);
+        final HTTPClientSingleton httpClientSingleton = HTTPClientSingleton.getInstance(this);
         String url = MainActivity.BASE_URL + "api/user";
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -132,6 +132,7 @@ public class LoginActivity extends Activity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                httpClientSingleton.removeAllCookies();
                 showProgress(false);
                 Snackbar.make(findViewById(android.R.id.content),
                         "Login failed: " + error, Snackbar.LENGTH_LONG).show();

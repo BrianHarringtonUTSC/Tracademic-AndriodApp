@@ -137,7 +137,7 @@ public class PersistentCookieStore implements CookieStore {
         String jsonSessionCookieString = gson.toJson(cookie);
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putString(PREF_SESSION_COOKIE, jsonSessionCookieString);
-        editor.commit();
+        editor.apply();
     }
 
     private SharedPreferences getSharedPreferences() {
@@ -145,6 +145,6 @@ public class PersistentCookieStore implements CookieStore {
     }
 
     private void deleteSharedPreferences() {
-        getSharedPreferences().edit().remove(PREF_SESSION_COOKIE).commit();
+        getSharedPreferences().edit().clear().apply();
     }
 }
