@@ -1,29 +1,5 @@
 package ca.utoronto.utsc.tracademia;
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Lukas Zorich
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -38,37 +14,20 @@ import java.util.List;
 /**
  * Repository for cookies. CookieManager will store cookies of every incoming HTTP response into
  * CookieStore, and retrieve cookies for every outgoing HTTP request.
- * <p/>
  * Cookies are stored in {@link android.content.SharedPreferences} and will persist on the
  * user's device between application session. {@link com.google.gson.Gson} is used to serialize
  * the cookies into a json string in order to be able to save the cookie to
  * {@link android.content.SharedPreferences}
- * <p/>
- * Created by lukas on 17-11-14.
+ * SOURCE: https://gist.github.com/lezorich/8f3f3a54f07515881581
  */
 public class PersistentCookieStore implements CookieStore {
-
-    /**
-     * The default preferences string.
-     */
     private final static String PREF_DEFAULT_STRING = "";
-
-    /**
-     * The preferences name.
-     */
     private final static String PREFS_NAME = PersistentCookieStore.class.getName();
-
-    /**
-     * The preferences session cookie key.
-     */
     private final static String PREF_SESSION_COOKIE = "session_cookie";
 
     private CookieStore mStore;
     private Context mContext;
 
-    /**
-     * @param context The application context
-     */
     public PersistentCookieStore(Context context) {
         // prevent context leaking by getting the application context
         mContext = context.getApplicationContext();
@@ -127,11 +86,6 @@ public class PersistentCookieStore implements CookieStore {
         return getSharedPreferences().getString(PREF_SESSION_COOKIE, PREF_DEFAULT_STRING);
     }
 
-    /**
-     * Saves the HttpCookie to SharedPreferences as a json string.
-     *
-     * @param cookie The cookie to save in SharedPreferences.
-     */
     private void saveSessionCookie(HttpCookie cookie) {
         Gson gson = new Gson();
         String jsonSessionCookieString = gson.toJson(cookie);
