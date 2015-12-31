@@ -17,6 +17,9 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 - VCS -> Checkout from Version Control -> GitHub.
 - Enter your credentials and the URL for this repository.
 
+### Bugs
+- Sometimes the app can be a bit finnicky, especially in regards to the persistent cookie used to keep logged in user info. If you have an issue where you logged in the past and you could see a list of students and now when you open the app it no longer shows a list of students, simply log out of the application to clear the cookies and login again.
+- For other bugs and crashes, please try to reproduce the steps that caused the crash and submit a bug report outlining the steps clearly to the current developer. The developer then should reproduce the bug on his/her phone and view the logcat to see the error. Adding Log statements i.e. Log.d(TAG, message) or using breakpoints can help in the debugging process.
 
 ## TODOs
 - Checkin functionality (currently each swipe opens the corresponding student info and TA has to manually select 1 XP).
