@@ -35,9 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
+           startLoginActivity();
         } else {
             FloatingActionButton cardReaderLauncherButton = (FloatingActionButton) findViewById(R.id.card_reader_launcher_button);
             cardReaderLauncherButton.setOnClickListener(this);
@@ -52,6 +50,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             transaction.add(R.id.fragment_container, studentsFragment);
             transaction.commit();
         }
+    }
+
+    protected void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public StudentsAdapter getStudentsAdapter() {
@@ -133,8 +137,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void logout() {
         HTTPClientSingleton.getInstance(this).removeAllCookies();
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+        startLoginActivity();
     }
 }

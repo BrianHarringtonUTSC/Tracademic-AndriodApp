@@ -70,10 +70,15 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         Student[] studentArray = new Gson().fromJson(response, Student[].class);
                         if (mAdapter != null) {
-                            mAdapter.addItemsToList(studentArray);
+                            mAdapter.setStudents(studentArray);
+
+                            // this is a temporary workaround till expired cookies are properly working
+                            // see: https://code.google.com/p/android/issues/detail?id=191981
+                            if (mAdapter.getItemCount() == 0) {
+                                mCallBack.logout();
+                            }
                     }
                         mSwipeLayout.setRefreshing(false);
                     }
@@ -118,7 +123,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 

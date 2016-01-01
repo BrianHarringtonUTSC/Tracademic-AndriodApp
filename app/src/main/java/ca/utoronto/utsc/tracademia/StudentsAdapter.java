@@ -58,7 +58,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         return mFilteredStudents.size();
     }
 
-    public void addItemsToList(Student... students) {
+    public void setStudents(Student... students) {
         mStudents.clear();
         mStudents.addAll(Arrays.asList(students));
         mFilteredStudents = new ArrayList<>(mStudents);
