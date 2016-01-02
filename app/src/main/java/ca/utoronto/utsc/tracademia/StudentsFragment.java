@@ -71,15 +71,16 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     @Override
                     public void onResponse(String response) {
                         Student[] studentArray = new Gson().fromJson(response, Student[].class);
-                        if (mAdapter != null) {
-                            mAdapter.setStudents(studentArray);
 
-                            // this is a temporary workaround till expired cookies are properly working
-                            // see: https://code.google.com/p/android/issues/detail?id=191981
-                            if (mAdapter.getItemCount() == 0) {
-                                mCallBack.logout();
-                            }
-                    }
+                        // this is a temporary workaround till expired cookies are properly working
+                        // means we got an empty list of students back from the server
+                        // assume empty list --> cookie expired
+                        // see: https://code.google.com/p/android/issues/detail?id=191981
+                        if (studentArray.length == 0) {
+                            mCallBack.logout();
+                        } else if (mAdapter != null) {
+                            mAdapter.setStudents(studentArray);
+                        }
                         mSwipeLayout.setRefreshing(false);
                     }
                 }, new Response.ErrorListener() {
