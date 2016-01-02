@@ -20,9 +20,7 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 ### Known Issues
 - Current HTTP Cookie implementation in Android does not calculate hasExpired() correctly (it always returns False) - [see relevant open issue](https://code.google.com/p/android/issues/detail?id=191981). 
   - Currently, as a temporary workaround, if we get the list of students with an expired cookie, we should get back a list of students with no username (the server only returns username when a TA is logged in) - in this case we force a logout as we can assume the cookie expired.
-  - Solution 1: The simplest fix is to allow a special param when logging in so that the cookie never expires on the server (the server would have to implement this), or has an insanely long expiry time. 
-  - Solution 2: Do a GET /api/user call to see if the server responds with "not logged in" or not. However, this check will have to be added to the onCreate in MainActivity and this will significantly slow down the overall performance of the app (every time we create MainActivity list it will have to wait for the GET call response). If there is a quicker way to do this then this will be the ideal solution.
-  - Solution 3: Manually store the expiry time in SharedPrefs. It will need to be updated on every call to the server as the server sets a rolling expiry time for a session (every call to server resets timer).
+  - The ideal situation is that the HTTP Cookie hasExpired implementation is fixed or the sever is modified to allow a special param when logging in so that the cookie never expires on the server, or has a very long expiry time. 
 
 ## TODOs
 - Checkin functionality (currently each swipe opens the corresponding student info and TA has to manually select 1 XP).
