@@ -85,8 +85,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                         // see: https://code.google.com/p/android/issues/detail?id=191981
                         if (studentArray.length > 0 && studentArray[0].getUsername() == null) {
                             mCallBack.logout();
-                            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "Session Expired.", Snackbar.LENGTH_LONG).show();
                         } else if (mAdapter != null) {
                             mAdapter.setStudents(studentArray);
                         }
