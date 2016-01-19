@@ -19,18 +19,16 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
 
 ### Known Issues
 - Current HTTP Cookie implementation in Android does not calculate hasExpired() correctly (it always returns False) - [see relevant open issue](https://code.google.com/p/android/issues/detail?id=191981). 
-  - Currently, as a temporary workaround, if we get the list of students with an expired cookie, we should get an empty result back so we force a logout when we get an empty list of students.
-  - Solution 1: The simplest fix is to allow a special param when logging in so that the cookie never expires on the server (the server would have to implement this), or has an insanely long expiry time. 
-  - Solution 2: Do a GET /api/user call to see if the server responds with "not logged in" or not. However, this check will have to be added to the onCreate in MainActivity and this will significantly slow down the overall performance of the app (every time we create MainActivity list it will have to wait for the GET call response). If there is a quicker way to do this then this will be the ideal solution.
-  - Solution 3: Manually store the expiry time in SharedPrefs. It will need to be updated on every call to the server as the server sets a rolling expiry time for a session (every call to server resets timer).
+  - Currently, as a temporary workaround, if we get the list of students with an expired cookie, we should get back a list of students with no username (the server only returns username when a TA is logged in) - in this case we force a logout as we can assume the cookie expired.
+  - The ideal situation is that the HTTP Cookie hasExpired implementation is fixed or the sever is modified to allow a special param when logging in so that the cookie never expires on the server, or has a very long expiry time. 
 
 ## TODOs
 - Checkin functionality (currently each swipe opens the corresponding student info and TA has to manually select 1 XP).
-- Fix certificate issues to prevent Man in the Middle attacks.
+- Fix certificate issues to prevent spoofing (currently all certificates are trusted via the "trustEveryone" method in HTTPClientSingleton).
 - Make code more efficient.
   - Currently a student lookup takes 2n steps where n is the number of students. Students are looked up based on student number so it makes sense to have a map mapping student number to student objects. Unfortunately, the adapter which displays the list of students requires a list to work. The positions also need to be consistent (ruling out HashMap). One solution is to use a LinkedHashMap (2n storage), or TreeMap (logarithmic lookup and inserts).
   - The app currently gets all students and re renders the list in the background every time a user goes to view the list of students. This lets us avoid having to manually update an indivudal student when a point is given to them and since the update happens in the background, the user does not have to wait, but it is inefficient. A better way would be to update the student's points manually and then do a GET api/user/:id to confirm that the server is consistent with our info.
-
+- The Fragments currently are passed the MainActivity as callback. This is not the best coding style. The best way is to create an interface that the MainActivity implements, then the callback should only be the interface. This stops any other methods from being exposed to the fragment and the fragment becomes flexible to be used by any class that implements the interface. 
 
 ## Development Tips
 - Adhere to Google's best [design](http://developer.android.com/design/index.html) and [coding](http://developer.android.com/index.html) standards.
