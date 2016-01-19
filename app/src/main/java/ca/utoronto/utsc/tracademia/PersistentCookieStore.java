@@ -82,10 +82,18 @@ public class PersistentCookieStore implements CookieStore {
         return mStore.removeAll();
     }
 
+    /**
+     * @return JSON encoded cookie from shared prefs.
+     */
     private String getJsonSessionCookieString() {
         return getSharedPreferences().getString(PREF_SESSION_COOKIE, PREF_DEFAULT_STRING);
     }
 
+    /**
+     * Save cookie in shared prefs in JSON encoding.
+     *
+     * @param cookie cookie to save.
+     */
     private void saveSessionCookie(HttpCookie cookie) {
         Gson gson = new Gson();
         String jsonSessionCookieString = gson.toJson(cookie);
@@ -94,10 +102,16 @@ public class PersistentCookieStore implements CookieStore {
         editor.apply();
     }
 
+    /**
+     * @return shared prefs.
+     */
     private SharedPreferences getSharedPreferences() {
         return mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
+    /**
+     * Delete shared prefs.
+     */
     private void deleteSharedPreferences() {
         getSharedPreferences().edit().clear().apply();
     }

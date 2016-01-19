@@ -12,9 +12,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-/*
- *  Authors: Umair Idris and Markus Friesen
- */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, FragmentManager.OnBackStackChangedListener {
     public static final String BASE_URL = "https://tracademic.utsc.utoronto.ca/"; // PROD
     //    public static final String BASE_URL = "https://track-point.cloudapp.net/"; // DEV
@@ -34,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        // if user is not logged in, start LoginActivity instead
         if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
            startLoginActivity();
         } else {
@@ -52,21 +50,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Finish this activity and start LoginActivity.
+     */
     protected void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }
 
+    /**
+     * @return Adapter containing al students.
+     */
     public StudentsAdapter getStudentsAdapter() {
         return mAdapter;
     }
 
+    /**
+     * Launch StudentInfoFragment for Student at given position in students adapter.
+     *
+     * @param position position of student in adapter.
+     */
     public void onStudentSelected(int position) {
         Student selectedStudent = mAdapter.getFilteredStudents().get(position);
         onStudentSelected(selectedStudent.getStudentNumber());
     }
 
+    /**
+     * Launch StudentInfoFragment for Student at given student number in students adapter.
+     * @param studentNumber student number of student in adapter.
+     */
     public void onStudentSelected(String studentNumber) {
         if (mAdapter.getStudentByStudentNumber(studentNumber) != null) {
             StudentInfoFragment studentInfoFragment = new StudentInfoFragment();
@@ -84,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Close the last fragment when student info is submitted.
+     */
     public void onStudentInfoSubmitted() {
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStack();
@@ -135,7 +151,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    /**
+     * Log user out.
+     */
     public void logout() {
+        // clear all cookies and start login activity
         HTTPClientSingleton.getInstance(this).removeAllCookies();
         startLoginActivity();
     }

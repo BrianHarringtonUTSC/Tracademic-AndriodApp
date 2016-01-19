@@ -39,6 +39,10 @@ public class HTTPClientSingleton {
         mCookieManager = getCookieManager();
     }
 
+    /**
+     * @param context context to get singleton from.
+     * @return Gets singleton instance.
+     */
     public static synchronized HTTPClientSingleton getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new HTTPClientSingleton(context);
@@ -47,6 +51,10 @@ public class HTTPClientSingleton {
         return mInstance;
     }
 
+    /**
+     * Trusts all certificates.
+     * NOTE: This adds a security vulnerability and should be fixed.
+     */
     private static void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
@@ -75,12 +83,18 @@ public class HTTPClientSingleton {
         }
     }
 
+    /**
+     * @return Gets request headers that should be used with every request to the server.
+     */
     public static Map<String, String> getRequestHeaders() {
         Map<String, String> params = new HashMap<>();
         params.put("x-no-csrf", "1");
         return params;
     }
 
+    /**
+     * Get queue used to process http requests.
+     */
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
@@ -90,11 +104,17 @@ public class HTTPClientSingleton {
         return mRequestQueue;
     }
 
+    /**
+     * Add a new request to the queue.
+     */
     public <T> void addToRequestQueue(Request<T> req) {
         setRequestTimeout(req);
         getRequestQueue().add(req);
     }
 
+    /**
+     * Sets max time for a request to finish.
+     */
     public void setRequestTimeout(Request request) {
         request.setRetryPolicy(new DefaultRetryPolicy(
                 REQUEST_TIMEOUT,
@@ -102,6 +122,11 @@ public class HTTPClientSingleton {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
+    /**
+     * Gets Cookie Manager.
+     *
+     * @return Cookie Manager
+     */
     public CookieManager getCookieManager() {
         if (mCookieManager == null) {
             mCookieManager = new CookieManager(new PersistentCookieStore(mContext.getApplicationContext()), CookiePolicy.ACCEPT_ALL);
@@ -110,11 +135,17 @@ public class HTTPClientSingleton {
         return mCookieManager;
     }
 
+    /**
+     * @return true if user is logged in, else false.
+     */
     public boolean isLoggedIn() {
         List<HttpCookie> cookies = getCookieManager().getCookieStore().getCookies();
         return cookies.size() == 1 && cookies.get(0).getName().equals(SESSION_COOKIE_NAME);
     }
 
+    /**
+     * Removes all cookies.
+     */
     public void removeAllCookies() {
         getCookieManager().getCookieStore().removeAll();
     }

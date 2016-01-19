@@ -44,6 +44,9 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         getPermissions();
     }
 
+    /**
+     * Starts the card reader and stores current volume.
+     */
     private void init() {
         setReaderStatusNotReady();
 
@@ -58,10 +61,17 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
+    /**
+     * @param permission permission to request
+     * @return true if permission has been granted, else false.
+     */
     private boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(this,  permission) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * Requests required permissions.
+     */
     private void getPermissions() {
         // only need to check for permissions on SDK 23 and above
         if (Build.VERSION.SDK_INT > 22) {
@@ -105,6 +115,9 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
 
     }
 
+    /**
+     * Sets textfield status to show that reader is not ready.
+     */
     private void setReaderStatusNotReady(){
         readerStatus.setText("Reader not ready");
         readerStatus.setTextColor(Color.RED);

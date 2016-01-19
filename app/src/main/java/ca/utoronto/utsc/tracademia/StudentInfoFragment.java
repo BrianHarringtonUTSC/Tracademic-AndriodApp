@@ -52,6 +52,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         studentPointInfoTextView = (TextView) getActivity().findViewById(R.id.student_points_info);
         studentPointInfoTextView.setText(mStudent.getPointsInfo());
 
+        // set point type and amount values in the number picker
         typePicker = (NumberPicker)getActivity().findViewById(R.id.point_type_picker);
         StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
         String[] types = new String[pt.length];
@@ -91,6 +92,12 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    /**
+     * Sends request to server to give points to user.
+     *
+     * @param type      type of point
+     * @param numPoints amount of points
+     */
     private void givePoints(final String type, final int numPoints) {
         String url = MainActivity.BASE_URL + "api/users/" + mStudent.get_id() + "/give";
 

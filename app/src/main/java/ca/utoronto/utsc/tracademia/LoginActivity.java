@@ -117,6 +117,12 @@ public class LoginActivity extends Activity {
         }
     }
 
+    /**
+     * Send login request to server.
+     *
+     * @param username Username of user logging in
+     * @param password Password of user logging in
+     */
     private void performLogin(final String username, final String password) {
         final HTTPClientSingleton httpClientSingleton = HTTPClientSingleton.getInstance(this);
         String url = MainActivity.BASE_URL + "api/user";
@@ -125,6 +131,7 @@ public class LoginActivity extends Activity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        // launch main activity on success
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -132,6 +139,7 @@ public class LoginActivity extends Activity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                // show error and remove any session cookies on error
                 httpClientSingleton.removeAllCookies();
                 showProgress(false);
                 Snackbar.make(findViewById(android.R.id.content),

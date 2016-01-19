@@ -33,31 +33,36 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         mCallback = callback;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public StudentsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view.
+        // Create new views (invoked by the layout manager)
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
 
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+        // Replace the contents of a view (invoked by the layout manager)
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         Student student = mFilteredStudents.get(position);
         viewHolder.mainText.setText(student.getUsername());
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+
     @Override
     public int getItemCount() {
+        // Return the size of your dataset (invoked by the layout manager)
         return mFilteredStudents.size();
     }
 
+    /**
+     * Sets the students and filtered students list. Clears previous list.
+     *
+     * @param students to set.
+     */
     public void setStudents(Student... students) {
         mStudents.clear();
         mStudents.addAll(Arrays.asList(students));
@@ -65,6 +70,9 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    /**
+     * @return filtered students.
+     */
     public List<Student> getFilteredStudents() {
         return mFilteredStudents;
     }
@@ -80,6 +88,9 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
         return null;
     }
 
+    /**
+     * @return filter for students.
+     */
     @Override
     public Filter getFilter() {
         return new StudentsFilter();

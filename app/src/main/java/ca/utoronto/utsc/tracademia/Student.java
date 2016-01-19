@@ -15,7 +15,9 @@ public class Student implements Serializable {
     private int challengePoints;
     private int teachingPoints;
 
-
+    /**
+     * @return string containing the amounts of all types of points.
+     */
     public String getPointsInfo() {
         return "XP: " + experiencePoints + " TP: " + teachingPoints + " CP: " + challengePoints;
     }

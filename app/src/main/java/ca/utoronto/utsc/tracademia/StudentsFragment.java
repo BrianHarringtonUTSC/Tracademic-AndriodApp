@@ -62,6 +62,9 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         return rootView;
     }
 
+    /**
+     * Loads all students from the server.
+     */
     private void loadStudents() {
         String url = MainActivity.BASE_URL + "api/users";
 
@@ -71,6 +74,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     @Override
                     public void onResponse(String response) {
                         Student[] studentArray = new Gson().fromJson(response, Student[].class);
+                        studentArray[0].setUsername(null);
                         mSwipeLayout.setRefreshing(false);
 
                         // this is a temporary workaround till expired cookies are properly working
@@ -81,6 +85,8 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                         // see: https://code.google.com/p/android/issues/detail?id=191981
                         if (studentArray.length > 0 && studentArray[0].getUsername() == null) {
                             mCallBack.logout();
+                            Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                    "Session Expired.", Snackbar.LENGTH_LONG).show();
                         } else if (mAdapter != null) {
                             mAdapter.setStudents(studentArray);
                         }
