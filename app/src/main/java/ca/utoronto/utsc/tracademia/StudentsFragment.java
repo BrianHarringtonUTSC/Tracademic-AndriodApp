@@ -74,7 +74,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     @Override
                     public void onResponse(String response) {
                         Student[] studentArray = new Gson().fromJson(response, Student[].class);
-                        studentArray[0].setUsername(null);
                         mSwipeLayout.setRefreshing(false);
 
                         // this is a temporary workaround till expired cookies are properly working
