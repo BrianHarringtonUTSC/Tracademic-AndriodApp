@@ -91,6 +91,7 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mSwipeLayout.setRefreshing(false);
                 Snackbar.make(getActivity().findViewById(android.R.id.content),
                         "Failed to get students: " + error, Snackbar.LENGTH_LONG).show();
             }
