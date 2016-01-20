@@ -41,7 +41,7 @@ public class HTTPClientSingleton {
 
     /**
      * @param context context to get singleton from.
-     * @return Gets singleton instance.
+     * @return singleton instance.
      */
     public static synchronized HTTPClientSingleton getInstance(Context context) {
         if (mInstance == null) {
@@ -84,7 +84,7 @@ public class HTTPClientSingleton {
     }
 
     /**
-     * @return Gets request headers that should be used with every request to the server.
+     * @return request headers that should be used with every request to the server.
      */
     public static Map<String, String> getRequestHeaders() {
         Map<String, String> params = new HashMap<>();
@@ -93,7 +93,7 @@ public class HTTPClientSingleton {
     }
 
     /**
-     * Get queue used to process http requests.
+     * @return queue used to process http requests.
      */
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
@@ -123,9 +123,7 @@ public class HTTPClientSingleton {
     }
 
     /**
-     * Gets Cookie Manager.
-     *
-     * @return Cookie Manager
+     * @return Cookie Manager that stores session cookies after logging in.
      */
     public CookieManager getCookieManager() {
         if (mCookieManager == null) {
