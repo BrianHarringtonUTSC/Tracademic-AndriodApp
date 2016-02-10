@@ -1388,6 +1388,13 @@
   </transformertf101>
  </asus>
  <acer>
+  <b1-810>
+   <support_status val="ump=s;um2=s;um2i=s;shuttle=s"> </support_status>
+   <directionOutputWave>1</directionOutputWave>
+   <InputFreq>48000</InputFreq>
+   <OutputFreq>48000</OutputFreq>
+   <baudRate>9600</baudRate>
+  </b1-810>
   <a1-713hd>
    <support_status val="ump=s;um2=s;um2i=s;shuttle=s"> </support_status>
    <directionOutputWave>1</directionOutputWave>
