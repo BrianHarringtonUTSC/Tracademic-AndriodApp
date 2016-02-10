@@ -50,8 +50,8 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     private void init() {
         setReaderStatusNotReady();
 
-        if(uniMagReader == null) {
-            uniMagReader = new uniMagReader(this,this);
+        if (uniMagReader == null) {
+            uniMagReader = new uniMagReader(this, this);
             uniMagReader.setSaveLogEnable(false);
             LoadXMLConfigurationTask loadXMLConfigurationTask = new LoadXMLConfigurationTask();
             loadXMLConfigurationTask.execute();
@@ -66,7 +66,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
      * @return true if permission has been granted, else false.
      */
     private boolean hasPermission(String permission) {
-        return ContextCompat.checkSelfPermission(this,  permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -118,7 +118,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     /**
      * Sets textfield status to show that reader is not ready.
      */
-    private void setReaderStatusNotReady(){
+    private void setReaderStatusNotReady() {
         readerStatus.setText("Reader not ready");
         readerStatus.setTextColor(Color.RED);
     }
@@ -160,18 +160,18 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
         String data = new String(arg1);
         Log.d(TAG, "Successful swipe: " + data);
 
-        if(uniMagReader.isSwipeCardRunning()) {
+        if (uniMagReader.isSwipeCardRunning()) {
             uniMagReader.stopSwipeCard();
         }
 
         // Match library card data. %FirstName^LastName^StudentNumber^DateOfCardRelease;LibraryNumber?
         String[] dataSplit = data.split("\\^");
-        if (dataSplit.length == 4 &&  dataSplit[2].matches("[0-9]{9,10}")) {
-           String studentNumber = dataSplit[2];
-           Intent resultIntent = new Intent();
-           resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
-           setResult(Activity.RESULT_OK, resultIntent);
-           finish();
+        if (dataSplit.length == 4 && dataSplit[2].matches("[0-9]{9,10}")) {
+            String studentNumber = dataSplit[2];
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(MainActivity.ARG_STUDENT_NUMBER, studentNumber);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
         } else {
             Snackbar.make(findViewById(android.R.id.content), "Invalid card data: " + data, Snackbar.LENGTH_LONG)
                     .show();
@@ -205,7 +205,7 @@ public class MagStripeReaderActivity extends AppCompatActivity implements uniMag
     @Override
     public void onReceiveMsgDisconnected() {
         Log.d(TAG, "onReceiveMsgDisconnected");
-        if(uniMagReader.isSwipeCardRunning()) {
+        if (uniMagReader.isSwipeCardRunning()) {
             uniMagReader.stopSwipeCard();
         }
         setReaderStatusNotReady();

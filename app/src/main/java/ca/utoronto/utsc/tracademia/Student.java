@@ -70,13 +70,14 @@ public class Student implements Serializable {
         this.displayNameCanonical = displayNameCanonical;
     }
 
-    public String getLibaryNumber(){
+    public String getLibaryNumber() {
         return libraryNumber;
     }
 
-    public void setLibraryNumber(String libraryNumber){
+    public void setLibraryNumber(String libraryNumber) {
         this.libraryNumber = libraryNumber;
     }
+
     public String getProfileText() {
         return profileText;
     }
@@ -84,7 +85,6 @@ public class Student implements Serializable {
     public void setProfileText(String profileText) {
         this.profileText = profileText;
     }
-
 
     public String getStudentNumber() {
         return this.studentNumber;

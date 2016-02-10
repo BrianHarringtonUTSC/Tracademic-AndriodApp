@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // if user is not logged in, start LoginActivity instead
         if (!HTTPClientSingleton.getInstance(this).isLoggedIn()) {
-           startLoginActivity();
+            startLoginActivity();
+//            finish();
         } else {
             FloatingActionButton cardReaderLauncherButton = (FloatingActionButton) findViewById(R.id.card_reader_launcher_button);
             cardReaderLauncherButton.setOnClickListener(this);
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * Launch StudentInfoFragment for Student at given student number in students adapter.
+     *
      * @param studentNumber student number of student in adapter.
      */
     public void onStudentSelected(String studentNumber) {
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.card_reader_launcher_button) {
+        if (v.getId() == R.id.card_reader_launcher_button) {
             Intent intent = new Intent(this, MagStripeReaderActivity.class);
             startActivityForResult(intent, GET_STUDENT_NUMBER_REQUEST);
         }

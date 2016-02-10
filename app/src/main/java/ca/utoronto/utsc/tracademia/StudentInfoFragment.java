@@ -53,7 +53,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         studentPointInfoTextView.setText(mStudent.getPointsInfo());
 
         // set point type and amount values in the number picker
-        typePicker = (NumberPicker)getActivity().findViewById(R.id.point_type_picker);
+        typePicker = (NumberPicker) getActivity().findViewById(R.id.point_type_picker);
         StudentInfoFragment.PointType[] pt = StudentInfoFragment.PointType.values();
         String[] types = new String[pt.length];
         for (int i = 0; i < pt.length; i++) {
@@ -64,7 +64,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         typePicker.setDisplayedValues(types);
         typePicker.setValue((int) Math.ceil(pt.length / 2));
 
-        pointsPicker = (NumberPicker)getActivity().findViewById(R.id.points_amount_picker);
+        pointsPicker = (NumberPicker) getActivity().findViewById(R.id.points_amount_picker);
         pointsPicker.setMinValue(0);
         pointsPicker.setMaxValue(5);
         pointsPicker.setWrapSelectorWheel(false);
@@ -81,7 +81,7 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.give_points_button){
+        if (v.getId() == R.id.give_points_button) {
             pointType = StudentInfoFragment.PointType.values()[typePicker.getValue()];
             int numPoints = pointsPicker.getValue();
             if (numPoints > 0) {
