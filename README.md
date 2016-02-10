@@ -23,6 +23,8 @@ https://www.youtube.com/watch?v=7H90pwhxFBQ
   - The ideal situation is that the HTTP Cookie hasExpired implementation is fixed or the sever is modified to allow a special param when logging in so that the cookie never expires on the server, or has a very long expiry time. 
 
 ## TODOs
+- Cancel all Volley requests for all network connecting activities on the onStop.
+- Add XML entry to detect Acer tablet.
 - Checkin functionality (currently each swipe opens the corresponding student info and TA has to manually select 1 XP).
 - Fix certificate issues to prevent spoofing (currently all certificates are trusted via the "trustEveryone" method in HTTPClientSingleton).
 - Make code more efficient.
