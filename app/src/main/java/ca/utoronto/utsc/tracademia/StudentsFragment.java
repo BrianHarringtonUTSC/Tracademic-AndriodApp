@@ -102,8 +102,8 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         };
 
-        // Add the request to the RequestQueue.
-        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
+        // Add the request to the RequestQueue
+        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest, TAG);
     }
 
     @Override
@@ -121,7 +121,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_search:
                 return true;
@@ -132,7 +131,6 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -156,5 +154,12 @@ public class StudentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         mAdapter.getFilter().filter(query);
         return false;
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        HTTPClientSingleton.getInstance(getActivity()).cancelAllRequests(TAG);
+    }
 }
+
 

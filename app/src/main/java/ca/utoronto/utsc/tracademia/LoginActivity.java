@@ -162,7 +162,7 @@ public class LoginActivity extends Activity {
         };
 
         // Add the request to the RequestQueue.
-        httpClientSingleton.addToRequestQueue(stringRequest);
+        httpClientSingleton.addToRequestQueue(stringRequest, TAG);
     }
 
     private boolean isUsernameValid(String username) {
@@ -197,5 +197,10 @@ public class LoginActivity extends Activity {
             }
         });
     }
-}
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        HTTPClientSingleton.getInstance(this).cancelAllRequests(TAG);
+    }
+}

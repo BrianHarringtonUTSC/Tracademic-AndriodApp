@@ -137,7 +137,13 @@ public class StudentInfoFragment extends Fragment implements View.OnClickListene
         mSubmitButtonView.setVisibility(View.INVISIBLE);
 
         // Add the request to the RequestQueue.
-        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
+        HTTPClientSingleton.getInstance(getActivity()).addToRequestQueue(stringRequest, TAG);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        HTTPClientSingleton.getInstance(getActivity()).cancelAllRequests(TAG);
     }
 
     public enum PointType {
